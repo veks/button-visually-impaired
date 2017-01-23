@@ -1,0 +1,442 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Button visually impaired\n"
+"POT-Creation-Date: 2016-12-23 16:17+0300\n"
+"PO-Revision-Date: 2016-12-23 16:17+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.10\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: Button-visually-impaired.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: Button-visually-impaired.php:236
+msgid "Документация"
+msgstr "Documentation"
+
+#: Button-visually-impaired.php:237
+msgid "Информация по плагину находится по адресу"
+msgstr "Information about the plugin can be found at"
+
+#: Button-visually-impaired.php:241
+msgid "Контакты"
+msgstr "Contacts"
+
+#: Button-visually-impaired.php:242
+msgid "По всем вопросам пишите на почту"
+msgstr "For any questions please contact us by e-mail"
+
+#: Button-visually-impaired.php:242
+msgid "или воспользуйтесь"
+msgstr "or use"
+
+#: Button-visually-impaired.php:242
+msgid "формой обратной связи"
+msgstr "feedback form"
+
+#: Button-visually-impaired.php:277
+msgid "Страница не найдена"
+msgstr "Page not found"
+
+#: Button-visually-impaired.php:308
+msgid "Настройки сохранены"
+msgstr "Settings have been saved"
+
+#: Button-visually-impaired.php:324
+msgid "Настройки сброшены"
+msgstr "Settings reset"
+
+#: Button-visually-impaired.php:345 Button-visually-impaired.php:362
+#: Button-visually-impaired.php:445 Button-visually-impaired.php:479
+msgid "Версия для слабовидящих"
+msgstr "Version for visually impaired"
+
+#: Button-visually-impaired.php:346 Button-visually-impaired.php:363
+#: Button-visually-impaired.php:421
+msgid "Обычная версия сайта"
+msgstr "Standard web site version"
+
+#: Button-visually-impaired.php:364
+msgid "нет описания к изображению"
+msgstr "no description to the image"
+
+#: Button-visually-impaired.php:365
+msgid "Изображение"
+msgstr "Picture"
+
+#: Button-visually-impaired.php:366
+msgid "Версия сайта для слабовидящих"
+msgstr "Site version for the visually impaired"
+
+#: Button-visually-impaired.php:367
+msgid "Синтез речи включен"
+msgstr "Speech synthesis is included"
+
+#: Button-visually-impaired.php:368
+msgid "Синтез речи выключен"
+msgstr "Speech synthesis is switched off"
+
+#: Button-visually-impaired.php:369
+msgid "Изображения включены"
+msgstr "Images included"
+
+#: Button-visually-impaired.php:370
+msgid "Изображения выключены"
+msgstr "The images are turned off"
+
+#: Button-visually-impaired.php:371
+msgid "Изображения черно-белые"
+msgstr "Images of black and white"
+
+#: Button-visually-impaired.php:372 Button-visually-impaired.php:399
+msgid "Цвет сайта: Черным по белому"
+msgstr "Color site: Black and white"
+
+#: Button-visually-impaired.php:373 Button-visually-impaired.php:400
+msgid "Цвет сайта: Белым по черному"
+msgstr "Color site: White on black"
+
+#: Button-visually-impaired.php:374 Button-visually-impaired.php:401
+msgid "Цвет сайта: Темно-синим по голубому"
+msgstr "Site Color: Dark blue on light blue"
+
+#: Button-visually-impaired.php:375 Button-visually-impaired.php:402
+msgid "Цвет сайта: Коричневым по бежевому"
+msgstr "Site Color: Brown on beige"
+
+#: Button-visually-impaired.php:376 Button-visually-impaired.php:403
+msgid "Цвет сайта: Зеленым по темно-коричневому"
+msgstr "Color site: Green on dark brown"
+
+#: Button-visually-impaired.php:377
+msgid "Размер шрифта 14 пикселей\", \"Russian Female"
+msgstr "The font size of 14 pixels \",\" Russian Female"
+
+#: Button-visually-impaired.php:378 Button-visually-impaired.php:393
+msgid "Размер шрифта 16 пикселей"
+msgstr "The font size of 16 pixels"
+
+#: Button-visually-impaired.php:379 Button-visually-impaired.php:394
+msgid "Размер шрифта 18 пикселей"
+msgstr "The font size of 18 pixels"
+
+#: Button-visually-impaired.php:380 Button-visually-impaired.php:396
+msgid "Размер шрифта 20 пикселей"
+msgstr "The font size of 20 pixels"
+
+#: Button-visually-impaired.php:381 Button-visually-impaired.php:397
+msgid "Размер шрифта 23 пикселя"
+msgstr "Font size 23 pixels"
+
+#: Button-visually-impaired.php:382
+msgid "Гарнитура без засечек"
+msgstr "Sans serif typeface"
+
+#: Button-visually-impaired.php:383
+msgid "Гарнитура с засечками"
+msgstr "Headset serif"
+
+#: Button-visually-impaired.php:384
+msgid "Кернинг стандартный"
+msgstr "Kern standard"
+
+#: Button-visually-impaired.php:385
+msgid "Кернинг средний"
+msgstr "Kern average"
+
+#: Button-visually-impaired.php:386
+msgid "Кернинг большой"
+msgstr "Kern large"
+
+#: Button-visually-impaired.php:387
+msgid "Интервал стандартный"
+msgstr "Interval standard"
+
+#: Button-visually-impaired.php:388
+msgid "Интервал средний"
+msgstr "Interval average"
+
+#: Button-visually-impaired.php:389
+msgid "Интервал большой"
+msgstr "Interval large"
+
+#: Button-visually-impaired.php:390
+msgid "Настройки по умолчанию сброшены"
+msgstr "The default settings are reset"
+
+#: Button-visually-impaired.php:391 assets/pages/admin.php:38
+msgid "Размер шрифта"
+msgstr "Font size"
+
+#: Button-visually-impaired.php:392
+msgid "Размер шрифта 14 пикселей"
+msgstr "The font size of 14 pixels"
+
+#: Button-visually-impaired.php:395
+msgid "Плагин для слабовидящих"
+msgstr "Button visually impaired"
+
+#: Button-visually-impaired.php:398 assets/pages/admin.php:24
+msgid "Цвета сайта"
+msgstr "Site colors"
+
+#: Button-visually-impaired.php:404 assets/pages/admin.php:76
+msgid "Изображения"
+msgstr "Images"
+
+#: Button-visually-impaired.php:405
+msgid " Ч/Б"
+msgstr " Grayscale"
+
+#: Button-visually-impaired.php:406
+msgid " Вкл."
+msgstr " On"
+
+#: Button-visually-impaired.php:407
+msgid " Выкл."
+msgstr " Off"
+
+#: Button-visually-impaired.php:408
+msgid "Дополнительно"
+msgstr "Additionally"
+
+#: Button-visually-impaired.php:409
+msgid "Выключить синтез речи"
+msgstr "Turn off speech synthesis"
+
+#: Button-visually-impaired.php:410
+msgid "Включить синтез речи"
+msgstr "Enable speech synthesis"
+
+#: Button-visually-impaired.php:411
+msgid "Настройки"
+msgstr "Settings"
+
+#: Button-visually-impaired.php:412
+msgid "Кернинг"
+msgstr "Kern"
+
+#: Button-visually-impaired.php:413 assets/pages/admin.php:56
+#: assets/pages/admin.php:68
+msgid "Стандартный"
+msgstr "Standard"
+
+#: Button-visually-impaired.php:414 assets/pages/admin.php:57
+#: assets/pages/admin.php:69
+msgid "Средний"
+msgstr "Average"
+
+#: Button-visually-impaired.php:415 assets/pages/admin.php:58
+#: assets/pages/admin.php:70
+msgid "Большой"
+msgstr "Big"
+
+#: Button-visually-impaired.php:416
+msgid "Интервал"
+msgstr "Interval"
+
+#: Button-visually-impaired.php:417
+msgid "Гарнитура"
+msgstr "Headset"
+
+#: Button-visually-impaired.php:418
+msgid "Без засечек"
+msgstr "Sans serif"
+
+#: Button-visually-impaired.php:419
+msgid "С засечками"
+msgstr "Serif"
+
+#: Button-visually-impaired.php:420
+msgid "Вернуть стандартные настройки"
+msgstr "Default settings"
+
+#: Button-visually-impaired.php:422
+msgid "Закрыть"
+msgstr "Close"
+
+#: Button-visually-impaired.php:483 assets/pages/admin.php:161
+msgid "Фон кнопки"
+msgstr "Button background"
+
+#: Button-visually-impaired.php:484
+msgid "Цвет текста кнопки иконки"
+msgstr "Text color icon button"
+
+#: assets/pages/admin.php:2
+msgid "Плагин"
+msgstr "Plug-in"
+
+#: assets/pages/admin.php:4
+msgid "Помочь проекту"
+msgstr "Donate"
+
+#: assets/pages/admin.php:6
+msgid "Основные настройки"
+msgstr "Basic settings"
+
+#: assets/pages/admin.php:7
+msgid "Настройки панели слабовидящих"
+msgstr "Settings panel visually impaired"
+
+#: assets/pages/admin.php:13
+msgid "Включить плагин?"
+msgstr "Enable plug-in?"
+
+#: assets/pages/admin.php:17 assets/pages/admin.php:81
+#: assets/pages/admin.php:92 assets/pages/admin.php:103
+#: assets/pages/admin.php:115 assets/pages/admin.php:225
+msgid "Включить"
+msgstr "On"
+
+#: assets/pages/admin.php:18 assets/pages/admin.php:82
+#: assets/pages/admin.php:93 assets/pages/admin.php:104
+#: assets/pages/admin.php:116 assets/pages/admin.php:226
+msgid "Выключить"
+msgstr "Off"
+
+#: assets/pages/admin.php:28
+msgid "Белым по черному"
+msgstr "White on black"
+
+#: assets/pages/admin.php:29
+msgid "Черным по белому"
+msgstr "In black and white"
+
+#: assets/pages/admin.php:30
+msgid "Темно-синим по голубому"
+msgstr "Dark blue on light blue"
+
+#: assets/pages/admin.php:31
+msgid "Коричневым по бежевому"
+msgstr "Brown on beige"
+
+#: assets/pages/admin.php:32
+msgid "Зеленым по темно-коричневому"
+msgstr "Green on dark brown"
+
+#: assets/pages/admin.php:52
+msgid "Интервал между буквами"
+msgstr "Spacing between letters"
+
+#: assets/pages/admin.php:64
+msgid "Интервал между строками"
+msgstr "Line Spacing"
+
+#: assets/pages/admin.php:80
+msgid "Черно-белые"
+msgstr "Black and white"
+
+#: assets/pages/admin.php:88
+msgid "Сохранение размера исходного изображения"
+msgstr "Maintains the original image size"
+
+#: assets/pages/admin.php:99
+msgid "Перезагрузка страницы"
+msgstr "Reloading the page"
+
+#: assets/pages/admin.php:111
+msgid "Синтез речи"
+msgstr "Text-to-speech"
+
+#: assets/pages/admin.php:122
+msgid "Зафиксировать панель настроек вверху страницы"
+msgstr "Lock settings bar at the top of the page"
+
+#: assets/pages/admin.php:130
+msgid "Отключить"
+msgstr "Shut off"
+
+#: assets/pages/admin.php:134
+msgid ""
+"Впишите название <u>class</u> или <u>id</u> через запятую для отключеня при "
+"включении версии для слабовидящих."
+msgstr ""
+"Enter the name of the <u>class</u> or <u>id</u>, separated by commas to "
+"disable when the version for the visually impaired."
+
+#: assets/pages/admin.php:136
+msgid "Например"
+msgstr "Example"
+
+#: assets/pages/admin.php:138
+msgid ""
+"Правильно вводите название класса или ид иначе плагин не будет работать."
+msgstr ""
+"Correctly enter the name of the class or id otherwise the plugin will not "
+"work."
+
+#: assets/pages/admin.php:143 assets/pages/admin.php:152
+msgid "Название сыллки"
+msgstr "Name references"
+
+#: assets/pages/admin.php:147
+msgid "Название сыллки включения плагина виджет"
+msgstr "Title links enable the plugin widget"
+
+#: assets/pages/admin.php:156
+msgid "Название сыллки выключения плагина"
+msgstr "Title links off plug"
+
+#: assets/pages/admin.php:169
+msgid "Цвет текста кнопки и иконки"
+msgstr "The color of the button text and icons"
+
+#: assets/pages/admin.php:177
+msgid "Размер иконки"
+msgstr "The size of the icons"
+
+#: assets/pages/admin.php:203
+msgid "Размер шрифта кнопки"
+msgstr "Font size buttons"
+
+#: assets/pages/admin.php:221
+msgid "<u>Включите</u> если плагин не работает"
+msgstr "<u>Switch </u> If the plugin does not work"
+
+#: assets/pages/admin.php:235
+msgid "Сохранить настройки"
+msgstr "Save settings"
+
+#: assets/pages/admin.php:241
+msgid "Сбросить настройки"
+msgstr "Reset settings"
+
+#. Plugin Name of the plugin/theme
+msgid "Button visually impaired"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.bvi.isvek.ru/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Версия плагина для слабовидящих."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Vek"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.isvek.ru/vek"
+msgstr ""
+
+#~ msgid "Плаги для слабовидящих"
+#~ msgstr "Button visually impaired"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "Вклчить синтез речи"
+#~ msgstr "Enable speech synthesis"
