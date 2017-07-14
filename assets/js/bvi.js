@@ -1,924 +1,553 @@
 /*!
- * Button visually impaired v1.0.4
+ * Button visually impaired v1.0.5
  */
 (function($) {
     var method = {
         Init: function(setting) {
-            console.log(bvi.ver);
             var selector = $(this).selector;
             var setting = $.extend({
                 BviPanel: 1,
+                BviPanelActive: 0,
                 BviPanelBg: "white",
-                BviPanelFontFamily: "arial",
-                BviPanelFontSize: "18",
+                BviPanelFontFamily: "default",
+                BviPanelFontSize: "12",
                 BviPanelLetterSpacing: "normal",
                 BviPanelLineHeight: "normal",
                 BviPanelImg: 1,
                 BviPanelImgXY: 1,
                 BviPanelReload: 0,
-                BviPanelTemplateButtonDefault: null,
-                BviPanelText: bvi_lang[1],
-                BviPanelCloseText: bvi_lang[2],
+                BviPanelText: 'Версия для слабовидящих',
+                BviPanelCloseText: 'Обычная версия сайта',
                 BviCloseClassAndId: '',
                 BviFixPanel: 1,
-                BviPlay: 1
+                BviPlay: 0,
+                BviFlash: 0
             }, setting);
-            if (Cookies.get("bvi-panel") == "1") {
-                $(setting.BviCloseClassAndId).hide();
-                $('*').each(function(){
-                    if (!$(this).attr('data-bvi-original'))
-                        $(this).attr('data-bvi-original',$(this).attr('style'));
-                    $('svg').hide();
-                });
-                 
-                $('object').hide();
-                method.Panel(setting.BviCloseClassAndId,setting.BviFixPanel);
-                method.Link(setting);
-                $(selector).hide();
-                $('.bvi-panel-open-menu').hide();
-                $('.bvi-panel-open-menu').after($('<li id="'+$('.bvi-panel-open-menu').attr("id")+'"class="bvi-panel-close-"><a href="#" id="bvi-panel-close" title="'+setting.BviPanelCloseText+'">'+setting.BviPanelCloseText+'</a></li>'));
-                $(selector).after($('<div class="bvi-panel-close-"><a href="#" id="bvi-panel-close" title="'+setting.BviPanelCloseText+'"><span class="bvi-eye"></span> '+setting.BviPanelCloseText+'</a></div>'));
-                method.BviPanelBgColor();
-                method.BviPanelImg();
-                method.BviPanelFontSize();
-                method.BviPanelLetterSpacing();
-                method.BviPanelLineHeight();
-                method.BviPanelFontFamily();
-                method.BviEyeColor();
-                //if(Cookies.get("bvi-panel-play") == '1') {
-                    method.BviPlayIcon();
-                //}
-            } else {
-                $(".bvi-panel-close-,.eye-disabled,#bvi-panel-close, .bvi-panel-close").remove();
-                $(selector).show();
-                $('object').show();
-                $(setting.BviCloseClassAndId).show();
-            }
-            $(selector+',.bvi-panel-open-menu').click(function() {
-                $(setting.BviCloseClassAndId).hide();
-                $('*').each(function(){
-                    if (!$(this).attr('data-bvi-original'))$(this).attr('data-bvi-original',$(this).attr('style'));
-                    $('svg').hide();
-                });
-                $('object').hide();
-                Cookies.set("bvi-panel", setting.BviPanel, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-bg", setting.BviPanelBg, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-font-family", setting.BviPanelFontFamily, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-font-size", setting.BviPanelFontSize, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-letter-spacing", setting.BviPanelLetterSpacing, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-line-height", setting.BviPanelLineHeight, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-img", setting.BviPanelImg, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-img-X-Y", setting.BviPanelImgXY, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-reload", setting.BviPanelReload, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-play", setting.BviPlay, {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == '1') {
-                    method.BviPlay();
-                }
-                method.Panel(setting.BviCloseClassAndId,setting.BviFixPanel);
-                method.Link(setting);
-                $(selector).hide();
-                $('.bvi-panel-open-menu').hide();
-                $('.bvi-panel-open-menu').after($('<li id="'+$('.bvi-panel-open-menu').attr("id")+'"class="bvi-panel-close-"><a href="#" id="bvi-panel-close" title="'+setting.BviPanelCloseText+'">'+setting.BviPanelCloseText+'</a></li>'));
-                $(selector).after($('<div class="bvi-panel-close-"><a href="#" id="bvi-panel-close" title="'+setting.BviPanelCloseText+'"><span class="bvi-eye"></span> '+setting.BviPanelCloseText+'</a></div>'));
-                method.BviPanelBgColor();
-                method.BviPanelImg();
-                method.BviPanelFontSize();
-                method.BviPanelLetterSpacing();
-                method.BviPanelLineHeight();
-                method.BviPanelFontFamily();
-                method.BviEyeColor();
-                //if(Cookies.get("bvi-panel-play") == '1') {
-                    method.BviPlayIcon();
-                //}
-                $('#bvi-panel-close, .bvi-panel-close').click(function(){
-                    Cookies.set("bvi-panel", "0", {
-                        path: "/"
-                    });
-                    $(".bvi-panel-close-, .eye-disabled, #bvi-panel-close, .bvi-panel-close").remove();
-                    $(".bvi-panel-menu").remove();
-                    $(".bvi-panel-img-not").remove();
-                    $(".bvi-grayscale").remove();
+
+            console.log('Button visually impaired v1.0.5');
+
+            function BviOn() {
+                if (Cookies.get("bvi-panel") == '1') {
                     $('*').each(function(){
-                        $('svg').show();
+                        if (!$(this).attr('data-bvi-original')) $(this).attr('data-bvi-original',$(this).attr('style'));
                     });
-                    $('object').show();
-                    method.Panel(setting.BviCloseClassAndId,setting.BviFixPanel);
-                    method.BviEyeColor();
-                    return false;
-                });
-                return false;
-            });
-            $('#bvi-panel-close, .bvi-panel-close').click(function(){
-                Cookies.set("bvi-panel", "0", {
-                    path: "/"
-                });
-                $(".bvi-panel-close-, .eye-disabled, #bvi-panel-close, .bvi-panel-close").remove();
-                $(".bvi-panel-menu").remove();
-                $(".bvi-panel-img-not").remove();
-                $(".bvi-grayscale").remove();
-                $('*').each(function(){
-                    $('svg').show();
-                });
-                method.Panel(setting.BviCloseClassAndId,setting.BviFixPanel);
-                method.BviEyeColor();
-                return false;
-            });
-        },
-        Bvilocale: function () {
-            var lang = bvi_get_locale;
-            if(lang == "ru_RU"){
-                v = "Russian Female";
-            } else {
-                v = "US English Female";
-            }
-            return v;
-        },
-        BviMobile: function () {
-            //return $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
-        },
-        BviEyeColor: function() {
-            if(Cookies.get('bvi-panel-bg') == 'white'){
-                $('.bvi-eye').addClass('eye-disabled-black');
-            } else {
-                $('.bvi-eye').removeClass('eye-disabled-black');
-                $('.bvi-color').removeClass('eye-disabled-black');
-            }
-            if(Cookies.get('bvi-panel-bg') == 'black'){
-                $('.bvi-eye').addClass('eye-disabled-white');
-            } else {
-                $('.bvi-eye').removeClass('eye-disabled-white');
-                $('.bvi-color').removeClass('eye-disabled-white');
-            }
-            if(Cookies.get('bvi-panel-bg') == 'blue'){
-                $('.bvi-eye').addClass('eye-disabled-blue');
-            } else {
-                $('.bvi-eye').removeClass('eye-disabled-blue');
-                $('.bvi-color').removeClass('eye-disabled-blue');
-            }
-            if(Cookies.get('bvi-panel-bg') == 'brown'){
-                $('.bvi-eye').addClass('eye-disabled-brown');
-            } else {
-                $('.bvi-eye').removeClass('eye-disabled-brown');
-                $('.bvi-color').removeClass('eye-disabled-brown');
-            }
-            if(Cookies.get('bvi-panel-bg') == 'green'){
-                $('.bvi-eye').addClass('eye-disabled-green');
-            } else {
-                $('.bvi-eye').removeClass('eye-disabled-green');
-                $('.bvi-color').removeClass('eye-disabled-green');
-            }
-        },
-        BviPanelFontFamily: function() {
-            if (Cookies.get("bvi-panel-font-family") == "arial") {
-                $("#bvi-panel-font-family-arial").addClass("active");
-                method.ReturnSet({
-                    fontfamily: "Arial, sans-serif"
-                })
-            } else {
-                $("#bvi-panel-font-family-arial").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-font-family") == "times") {
-                $("#bvi-panel-font-family-times-new-roman").addClass("active");
-                method.ReturnSet({
-                    fontfamily: '"Times New roman", serif'
-                })
-            } else {
-                $("#bvi-panel-font-family-times-new-roman").removeClass("active")
-            }
-        },
-        BviPanelLetterSpacing: function() {
-            if (Cookies.get("bvi-panel-letter-spacing") === "normal") {
-                $("#bvi-panel-letter-spacing-normal").addClass("active");
-                method.ReturnSet({
-                    letterspacing: "0px"
-                })
-            } else {
-                $("#bvi-panel-letter-spacing-normal").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-letter-spacing") === "average") {
-                $("#bvi-panel-letter-spacing-average").addClass("active");
-                method.ReturnSet({
-                    letterspacing: "2px"
-                })
-            } else {
-                $("#bvi-panel-letter-spacing-average").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-letter-spacing") === "big") {
-                $("#bvi-panel-letter-spacing-big").addClass("active");
-                method.ReturnSet({
-                    letterspacing: "5px"
-                })
-            } else {
-                $("#bvi-panel-letter-spacing-big").removeClass("active")
-            }
-        },
-        BviPanelLineHeight: function() {
-            if (Cookies.get("bvi-panel-line-height") === "normal") {
-                $("#bvi-panel-line-height-normal").addClass("active");
-                method.ReturnSet({
-                    lineheight: "normal"
-                })
-            } else {
-                $("#bvi-panel-line-height-normal").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-line-height") === "average") {
-                $("#bvi-panel-line-height-average").addClass("active");
-                method.ReturnSet({
-                    lineheight: "2"
-                })
-            } else {
-                $("#bvi-panel-line-height-average").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-line-height") === "big") {
-                $("#bvi-panel-line-height-big").addClass("active");
-                method.ReturnSet({
-                    lineheight: "3"
-                })
-            } else {
-                $("#bvi-panel-line-height-big").removeClass("active")
-            }
-        },
-        BviPanelFontSize: function() {
-            if (Cookies.get("bvi-panel-font-size") == "14") {
-                $("#bvi-panel-font-size-14").addClass("active");
-                method.ReturnSet({
-                    fontsize: "14px"
-                });
-            } else {
-                $("#bvi-panel-font-size-14").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-font-size") == "16") {
-                $("#bvi-panel-font-size-16").addClass("active");
-                method.ReturnSet({
-                    fontsize: "16px"
-                })
-            } else {
-                $("#bvi-panel-font-size-16").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-font-size") == "18") {
-                $("#bvi-panel-font-size-18").addClass("active");
-                method.ReturnSet({
-                    fontsize: "18px"
-                })
-            } else {
-                $("#bvi-panel-font-size-18").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-font-size") == "20") {
-                $("#bvi-panel-font-size-20").addClass("active");
-                method.ReturnSet({
-                    fontsize: "20px"
-                })
-            } else {
-                $("#bvi-panel-font-size-20").removeClass("active")
-            }
-            if (Cookies.get("bvi-panel-font-size") == "23") {
-                $("#bvi-panel-font-size-23").addClass("active");
-                method.ReturnSet({
-                    fontsize: "23px"
-                })
-            } else {
-                $("#bvi-panel-font-size-23").removeClass("active")
-            }
-        },
-        BviPanelBgColor: function() {
-            if (Cookies.get("bvi-panel-bg") == "white") {
-                $("#bvi-panel-bg-white").addClass("active");
-                method.ReturnSet({
-                    backgroundcolor: "#ffffff",
-                    color: "#000000"
-                });
-            } else {
-                $("#bvi-panel-bg-white").removeClass("active");
-            }
-            if (Cookies.get("bvi-panel-bg") == "black") {
-                $("#bvi-panel-bg-black").addClass("active");
-                method.ReturnSet({
-                    backgroundcolor: "#000000",
-                    color: "#ffffff"
-                });
-            } else {
-                $("#bvi-panel-bg-black").removeClass("active");
-            }
-            if (Cookies.get("bvi-panel-bg") == "blue") {
-                $("#bvi-panel-bg-blue").addClass("active");
-                method.ReturnSet({
-                    backgroundcolor: "#9DD1FF",
-                    color: "#063462"
-                });
-            } else {
-                $("#bvi-panel-bg-blue").removeClass("active");
-            }
-            if (Cookies.get("bvi-panel-bg") == "brown") {
-                $("#bvi-panel-bg-brown").addClass("active");
-                method.ReturnSet({
-                    backgroundcolor: "#f7f3d6",
-                    color: "#4d4b43"
-                });
-            } else {
-                $("#bvi-panel-bg-brown").removeClass("active");
-            }
-            if (Cookies.get("bvi-panel-bg") == "green") {
-                $("#bvi-panel-bg-green").addClass("active");
-                method.ReturnSet({
-                    backgroundcolor: "#3B2716",
-                    color: "#A9E44D"
-                });
-            } else {
-                $("#bvi-panel-bg-green").removeClass("active");
-            }
-        },
-        BviPanelImg: function() {
-            $(".bvi-panel-img-not").remove();
-            if (Cookies.get("bvi-panel-img") == 1) {
-                $("img").each(function() {
-                    $(".bvi-grayscale").remove();
-                    $(".bvi-panel-img-not").remove();
-                    $(this).show();
-                });
-                $("#bvi-panel-img-grayScale").removeClass('active');
-                $("#bvi-panel-img-off").removeClass('active');
-                $("#bvi-panel-img-on").addClass('active');
-                $(".bvi-grayscale").remove();
-                $(".bvi-panel-img-not").remove();
-            } else {
-                $(".bvi-grayscale").remove();
-                if (Cookies.get("bvi-panel-img") == 'grayScale') {
-                    $("img").each(function() {
-                        var alt = this.alt || bvi_lang[3];
-                        var src = this.src;
-                        var imgClass = $(this).attr("class") || 'bvi-class';
-                        var imgId = $(this).attr("id") || 'bvi-panel-img-not';
-                        $(this).hide();
-                        $(this).after($('<img src="'+src+'" alt="'+alt+'" id="'+imgId+'" class="bvi-grayscale '+imgClass+'">'));
-                        $(".bvi-grayscale").css({
-                            filter:'progid:DXImageTransform.Microsoft.BasicImage(grayScale=1)',
-                            MsFilter:'progid:DXImageTransform.Microsoft.BasicImage(grayscale=1)',
-                            filter: 'grayscale(100%)',
-                            filter: 'grayscale(1)',
-                            filter: 'grayscale(1)',
-                            filter: 'gray'
-                        });
-                    });
-                    $("#bvi-panel-img-grayScale").addClass('active');
-                    $("#bvi-panel-img-off").removeClass('active');
-                    $("#bvi-panel-img-on").removeClass('active');
-                    $('.coin-slider').show();
-                    //
-                } else {
-                    $(".bvi-grayscale").remove();
-                    $("img").each(function() {
-                        var alt = this.alt || bvi_lang[3];
-                        var imgClass = $(this).attr("class") || 'bvi-class';
-                        var imgId = $(this).attr("id") || 'bvi-panel-img-not';
-                        $(this).hide();
-                        if (Cookies.get("bvi-panel-img-X-Y") == 1) {
-                            $(this).after($('<div class="bvi-panel-img-not '+imgClass+'" id="'+imgId+'" style="width: ' + $(this).width() + "px; height: " + $(this).height() + 'px">').html(bvi_lang[4]+" : " + alt))
-                        } else {
-                            $(this).after($('<div class="bvi-panel-img-not">').text(bvi_lang[4]+" : " + alt))
-                        }
-                    });
-                    $("#bvi-panel-img-grayScale").removeClass('active');
-                    $("#bvi-panel-img-off").addClass('active');
-                    $("#bvi-panel-img-on").removeClass('active');
+                    BviPanel();
+                    method.Bvi(setting);
                 }
             }
-        },
-        BviPlay : function () {
-            if(Cookies.get("bvi-panel-play") == '1') {
-                responsiveVoice.speak(bvi_lang[1], ""+method.Bvilocale()+"");
-            } else {
-                responsiveVoice.speak(bvi_lang[2], ""+method.Bvilocale()+"");
-            }
-        },
-        BviPlayIcon : function () {
-            if(Cookies.get("bvi-panel-play") == '1') {
-                $('#bvi-panel-play-on').addClass('bvi-panel-menu-hidden');
-                $('#bvi-panel-play-off').removeClass('bvi-panel-menu-hidden');
-            } else {
-                $('#bvi-panel-play-off').addClass('bvi-panel-menu-hidden');
-                $('#bvi-panel-play-on').removeClass('bvi-panel-menu-hidden');
-            }
-        },
-        Link: function(setting) {
-            /*
-            $("#bvi-panel-close, .bvi-panel-close").click(function() {
-                Cookies.set("bvi-panel", "0", {
-                    path: "/"
-                });
-                $(".bvi-panel").remove();
-                $("#bvi-panel-close, .bvi-panel-close").remove();
-                $(".bvi-panel-img-not").remove();
-                console.log('3');
-                //$("*").each(function() {
-                //    $(this).removeAttr("style");
-                //    $(this).attr("style",$(this).attr('data-bvi-original'));
-                //});
-                method.Panel();
-                return false;
-            });
-            */
-            $("#bvi-panel-play-on").click(function() {
-                Cookies.set("bvi-panel-play", "1", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-panel-play") == '1') {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[6], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPlayIcon();
-                return false;
-            });
-            $("#bvi-panel-play-off").click(function() {
-                Cookies.set("bvi-panel-play", "0", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-panel-play") == '0') {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[7], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPlayIcon();
-                return false;
-            });
-            $("#bvi-panel-img-on").click(function() {
-                Cookies.set("bvi-panel-img", "1", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[8], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelImg();
-                return false;
-            });
-            $("#bvi-panel-img-off").click(function() {
-                Cookies.set("bvi-panel-img", "0", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[9], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelImg();
-                return false;
-            });
-            $("#bvi-panel-img-grayScale").click(function() {
-                Cookies.set("bvi-panel-img", "grayScale", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[10], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelImg();
-                return false;
-            });
-            $("#bvi-panel-bg-white").click(function() {
-                Cookies.set("bvi-panel-bg", "white", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[11], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelBgColor();
-                return false;
-            });
-            $("#bvi-panel-bg-black").click(function() {
-                Cookies.set("bvi-panel-bg", "black", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[12], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelBgColor();
-                return false;
-            });
-            $("#bvi-panel-bg-blue").click(function() {
-                Cookies.set("bvi-panel-bg", "blue", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[13], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelBgColor();
-                return false;
-            });
-            $("#bvi-panel-bg-brown").click(function() {
-                Cookies.set("bvi-panel-bg", "brown", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[14], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelBgColor();
-                return false;
-            });
-            $("#bvi-panel-bg-green").click(function() {
-                Cookies.set("bvi-panel-bg", "green", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[15], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelBgColor();
-                return false;
-            });
-            $("#bvi-panel-font-size-14").click(function() {
-                Cookies.set("bvi-panel-font-size", "14", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[16], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontSize();
-                return false;
-            });
-            $("#bvi-panel-font-size-16").click(function() {
-                Cookies.set("bvi-panel-font-size", "16", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[17], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontSize();
-                return false;
-            });
-            $("#bvi-panel-font-size-18").click(function() {
-                Cookies.set("bvi-panel-font-size", "18", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[18], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontSize();
-                return false;
-            });
-            $("#bvi-panel-font-size-20").click(function() {
-                Cookies.set("bvi-panel-font-size", "20", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[19], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontSize();
-                return false;
-            });
-            $("#bvi-panel-font-size-23").click(function() {
-                Cookies.set("bvi-panel-font-size", "23", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[20], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontSize();
-                return false;
-            });
-            $("#bvi-panel-settings,.bvi-panel-settings-close").click(function() {
-                $(".bvi-panel-settings").slideToggle("slow");
-                $('#bvi-panel-settings').toggleClass('active');
-                return false;
-            });
-            $("#bvi-panel-font-family-arial").click(function() {
-                Cookies.set("bvi-panel-font-family", "arial", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[21], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontFamily();
-                return false;
-            });
-            $("#bvi-panel-font-family-times-new-roman").click(function() {
-                Cookies.set("bvi-panel-font-family", "times", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[22], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelFontFamily();
-                return false;
-            });
-            $("#bvi-panel-letter-spacing-normal").click(function() {
-                Cookies.set("bvi-panel-letter-spacing", "normal", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[23], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLetterSpacing();
-                return false;
-            });
-            $("#bvi-panel-letter-spacing-average").click(function() {
-                Cookies.set("bvi-panel-letter-spacing", "average", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[24], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLetterSpacing();
-                return false;
-            });
-            $("#bvi-panel-letter-spacing-big").click(function() {
-                Cookies.set("bvi-panel-letter-spacing", "big", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[25], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLetterSpacing();
-                return false;
-            });
-            $("#bvi-panel-line-height-normal").click(function() {
-                Cookies.set("bvi-panel-line-height", "normal", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[26], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLineHeight();
-                return false;
-            });
-            $("#bvi-panel-line-height-average").click(function() {
-                Cookies.set("bvi-panel-line-height", "average", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[27], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLineHeight();
-                return false;
-            });
-            $("#bvi-panel-line-height-big").click(function() {
-                Cookies.set("bvi-panel-line-height", "big", {
-                    path: "/"
-                });
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[28], ""+method.Bvilocale()+"");
-                    }
-                }
-                method.BviPanelLineHeight();
-                return false;
-            });
-            $(".bvi-panel-settings-default").click(function() {
-                Cookies.set("bvi-panel", setting.BviPanel, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-bg", setting.BviPanelBg, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-font-family", setting.BviPanelFontFamily, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-font-size", setting.BviPanelFontSize, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-letter-spacing", setting.BviPanelLetterSpacing, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-line-height", setting.BviPanelLineHeight, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-img", setting.BviPanelImg, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-img-X-Y", setting.BviPanelImgXY, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-reload", setting.BviPanelReload, {
-                    path: "/"
-                });
-                Cookies.set("bvi-panel-play", setting.BviPlay, {
-                    path: "/"
-                });
-                method.BviPanelImg();
-                method.BviPanelBgColor();
-                method.BviPanelFontSize();
-                method.BviPanelLetterSpacing();
-                method.BviPanelLineHeight();
-                method.BviPanelFontFamily();
-                if(Cookies.get("bvi-panel-play") == 1 ) {
-                    if(responsiveVoice.voiceSupport() == true) {
-                        responsiveVoice.speak(bvi_lang[29], ""+method.Bvilocale()+"");
-                    }
-                }
-                return false;
-            })
-        },
-        ReturnSet: function(setting) {
-            $("*").not(".bvi-panel-menu, .bvi-panel-menu *, .fa, .glyphicon, .dashicons, .bvi-body").each(function() {
-                $(this).css({
-                    "font-family": setting.fontfamily,
-                    "background-color": setting.backgroundcolor,
-                    "background-image": "none",
-                    "color": setting.color,
-                    "font-size": setting.fontsize,
-                    "box-shadow": "none",
-                    "text-shadow": "none",
-                    "letter-spacing": setting.letterspacing,
-                    "border-color": setting.color,
-                    "line-height": setting.lineheight
-                });
-                $('body').css({});
-            })
-        },
-        Panel: function(BviCloseClassAndId,BviFixPanel) {
-            if (Cookies.get("bvi-panel") == "1") {
-                $('<div class="bvi-panel-menu"></div>').prependTo("body");
-                $(".bvi-panel-menu").addClass("bvi-panel-animated bvi-panel-fadeInDown");
+
+            BviOn();
+
+            function BviPanel() {
+                $(selector).addClass('bvi-hide');
+                $('.bvi-panel-open-menu').addClass('bvi-hide');
+                $(selector).after($('<a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i> '+setting.BviPanelCloseText+'</a>'));
+                $('.bvi-panel-open-menu').after($('<li class="bvi-panel-close"><a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"> '+setting.BviPanelCloseText+'</a></li>'));
+                $(setting.BviCloseClassAndId).hide();
+
+                $('body').wrapInner('<div class="bvi-body"></div>');//wrapInner
+                $('<div class="bvi-panel"></div>').prependTo("body");
+
                 var scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-                if (BviFixPanel == '1') {
+                if (setting.BviFixPanel == '1') {
                     if (scroll > 99) {
-                        $(".bvi-panel-menu").addClass("bvi-panel-fixed");
+                        $(".bvi-panel").addClass("bvi-panel-fixed");
                     }
 
-                    $(window).scroll(function() {
+                    $(window).scroll(function () {
                         if ($(this).scrollTop() >= 99) {
-                            $(".bvi-panel-menu").addClass("bvi-panel-fixed");
-                            $(".bvi-panel-menu").css({
-                                "left": "0",
-                                "margin-bottom": "20px",
+                            $(".bvi-panel").addClass("bvi-panel-fixed");
+                            $(".bvi-panel").css({
+                                "left": 0,
+                                "top": 0,
+                                "right": 0,
                                 "margin-left": "auto",
                                 "margin-right": "auto",
                                 "position": "fixed",
-                                "right": 0,
-                                "z-index": 99999
+                                "z-index": 999999,
+                                "margin-bottom": "20px"
                             });
                         } else {
-                            $(".bvi-panel-menu").removeClass("bvi-panel-fixed");
-                            $(".bvi-panel-menu").removeAttr("style");
+                            $(".bvi-panel").removeClass("bvi-panel-fixed");
+                            $(".bvi-panel").removeAttr("style");
                         }
                     });
                 }
-
-
-                $('<div class="bvi-panel-container">'+
-                    '<div class="bvi-panel-row">'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-12 bvi-panel-col-lg-12">'+
-                    '<div class="bvi-panel-menu-bg">'+
-                    '<div class="bvi-panel-row">'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-3 bvi-panel-col-lg-3">'+
-                    '<div class="bvi-panel-menu-block">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[30]+'</div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[30]+'">'+
-                    '<a href="#" id="bvi-panel-font-size-14" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-font-size-14" title="'+bvi_lang[31]+'">А</a>'+
-                    '<a href="#" id="bvi-panel-font-size-16" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-font-size-16" title="'+bvi_lang[32]+'">А</a>'+
-                    '<a href="#" id="bvi-panel-font-size-18" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-font-size-18" title="'+bvi_lang[33]+'">А</a>'+
-                    '<a href="#" id="bvi-panel-font-size-20" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-font-size-20" title="'+bvi_lang[35]+'">А</a>'+
-                    '<a href="#" id="bvi-panel-font-size-23" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-font-size-23" title="'+bvi_lang[36]+'">А</a>'+
+                $('<div class="bvi-container">'+
+                    '<div class="bvi-row">'+
+                    '<div class="bvi-panel-menu">'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12 bvi-bg bvi-animated bvi-slideInDown">'+
+                    '<div class="bvi-row">'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-2 bvi-col-lg-3">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Размер шрифта</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-font-size-minus" class="bvi-btn bvi-btn-default" title="Уменьшить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>-</b></a>'+
+                    '<a href="#" id="bvi-font-size-plus" class="bvi-btn bvi-btn-default" title="Увеличить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>+</b></a>'+
+                    '</div>'+
+                    '<div class="bvi-title-text"><span id="bvi-size-number"></span> <span id="bvi-size-text"></span></div>'+
                     '</div>'+
                     '</div>'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-3">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Цвета сайта</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-color-white" class="bvi-btn bvi-btn-white" title="Цвет сайта: Черным по белому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
+                    '<a href="#" id="bvi-color-black" class="bvi-btn bvi-btn-black" title="Цвет сайта: Белым по черному"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
+                    '<a href="#" id="bvi-color-blue" class="bvi-btn bvi-btn-blue" title="Цвет сайта: Темно-синим по голубому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
+                    '<a href="#" id="bvi-color-brown" class="bvi-btn bvi-btn-brown" title="Цвет сайта: Коричневым по бежевому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
+                    '<a href="#" id="bvi-color-green" class="bvi-btn bvi-btn-green" title="Цвет сайта: Зеленым по темно-коричневому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
                     '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-3 bvi-panel-col-lg-3">'+
-                    '<div class="bvi-panel-menu-block">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[37]+'</div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[37]+'">'+
-                    '<a href="#" id="bvi-panel-bg-white" class="bvi-panel-btn bvi-panel-btn-black-white" title="'+bvi_lang[38]+'">Ц</a>'+
-                    '<a href="#" id="bvi-panel-bg-black" class="bvi-panel-btn bvi-panel-btn-white-black" title="'+bvi_lang[39]+'">Ц</a>'+
-                    '<a href="#" id="bvi-panel-bg-blue" class="bvi-panel-btn bvi-panel-btn bvi-panel-btn-blue" title="'+bvi_lang[40]+'">Ц</a>'+
-                    '<a href="#" id="bvi-panel-bg-brown" class="bvi-panel-btn bvi-panel-btn-brown" title="'+bvi_lang[41]+'">Ц</a>'+
-                    '<a href="#" id="bvi-panel-bg-green" class="bvi-panel-btn bvi-panel-btn-green" title="'+bvi_lang[42]+'">Ц</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-3 bvi-panel-col-lg-3">'+
-                    '<div class="bvi-panel-menu-block">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[4]+'</div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[4]+'">'+
-                    '<a href="#" id="bvi-panel-img-grayScale" class="bvi-panel-btn bvi-panel-btn-default"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-picture" style="color: grey;"></i></a>'+
-                    '<a href="#" id="bvi-panel-img-on" class="bvi-panel-btn bvi-panel-btn-default"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-ok-circle" style="color: green;"></i></a>'+
-                    '<a href="#" id="bvi-panel-img-off" class="bvi-panel-btn bvi-panel-btn-default"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-remove-circle" style="color: red;"></i></a>'+
+                    '<div class="bvi-title-text"><span id="bvi-color-text"></span></div>'+
                     '</div>'+
                     '</div>'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Изображения</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-img-on" class="bvi-btn bvi-btn-default" title="Включить" style="color: green"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
+                    '<a href="#" id="bvi-img-off" class="bvi-btn bvi-btn-default" title="Выключить" style="color: red"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
+                    '<a href="#" id="bvi-img-grayscale" class="bvi-btn bvi-btn-default" title="Черно-белые"><i class="bvi-glyphicon bvi-glyphicon-adjust"></i></a>'+
                     '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-3 bvi-panel-col-lg-3">'+
-                    '<div class="bvi-panel-menu-block">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[47]+'</div>'+
-                    '<div class="bvi-panel-btn-toolbar" role="toolbar" aria-label="'+bvi_lang[47]+'">' +
-                    '<a href="#" id="bvi-panel-play-off" class="bvi-panel-btn bvi-panel-btn-default" title="'+bvi_lang[48]+'"><span class="bvi-panel-glyphicon bvi-panel-glyphicon-volume-off"></span></a>'+
-                    '<a href="#" id="bvi-panel-play-on" class="bvi-panel-btn bvi-panel-btn-default" title="'+bvi_lang[49]+'"><span class="bvi-panel-glyphicon bvi-panel-glyphicon-volume-up"></span></a>' +
+                    '<div class="bvi-title-text"><span id="bvi-img-text"></span></div>'+
                     '</div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[47]+'">'+
-                    '<a href="#" id="bvi-panel-settings" class="bvi-panel-btn bvi-panel-btn-default" title="'+bvi_lang[50]+'"><span class="bvi-panel-glyphicon bvi-panel-glyphicon-cog"></span> '+bvi_lang[50]+'</a>'+
-                    '<a href="#" id="bvi-panel-close" class="bvi-panel-btn bvi-panel-btn-default" title="'+bvi_lang[2]+'"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-eye-close"></i></a>'+
+                    '</div>'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Дополнительно</div>'+
+                    '<div class="bvi-btn-toolbar">'+
+                    '<a href="#" id="bvi-voice-off" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-off"></i></a>'+
+                    '<a href="#" id="bvi-voice-on" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-up"></i></a>'+
+                    '</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-settings" class="bvi-btn bvi-btn-default" title="Настройки"><i class="bvi-glyphicon bvi-glyphicon-cog"></i> Настройки</a>'+
+                    '<a href="#" id="bvi-close" class="bvi-btn bvi-btn-default" title="Обычная версия сайта"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i></a>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
-                    '<div class="bvi-panel-row">'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-12 bvi-panel-col-lg-12">'+
-                    '<div class="bvi-panel-row">'+
-                    '<div class="bvi-panel-settings">'+
+                    '<div class="bvi-row">'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
+                    '<div class="bvi-settings">'+
                     '<hr>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-4 bvi-panel-col-lg-4">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[51]+' </div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[51]+'">'+
-                    '<a href="#" id="bvi-panel-letter-spacing-normal" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[52]+'</a>'+
-                    '<a href="#" id="bvi-panel-letter-spacing-average" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[53]+'</a>'+
-                    '<a href="#" id="bvi-panel-letter-spacing-big" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[54]+'</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-6 bvi-panel-col-md-4 bvi-panel-col-lg-4">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[55]+' </div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[55]+'">'+
-                    '<a href="#" id="bvi-panel-line-height-normal" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[52]+'</a>'+
-                    '<a href="#" id="bvi-panel-line-height-average" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[53]+'</a>'+
-                    '<a href="#" id="bvi-panel-line-height-big" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[54]+'</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12s bvi-panel-col-md-4 bvi-panel-col-lg-4">'+
-                    '<div class="bvi-panel-title">'+bvi_lang[55]+' </div>'+
-                    '<div class="bvi-panel-btn-group" role="group" aria-label="'+bvi_lang[55]+'">'+
-                    '<a href="#" id="bvi-panel-font-family-arial" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[56]+'</a>'+
-                    '<a href="#" id="bvi-panel-font-family-times-new-roman" class="bvi-panel-btn bvi-panel-btn-default">'+bvi_lang[57]+'</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-4 bvi-panel-col-lg-4" style="margin-top: 15px;">'+
-                    '<a href="#" id="bvi-panel-settings-default" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-settings-default bvi-panel-btn-block"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-refresh"></i> '+bvi_lang[59]+'</a>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-4 bvi-panel-col-lg-4" style="margin-top: 15px;">'+
-                    '<a href="#" id="bvi-panel-close" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-settings-close bvi-panel-btn-block" title="Обычная версия сайта"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-eye-close"></i> '+bvi_lang[60]+'</a>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-4 bvi-panel-col-lg-4" style="margin-top: 15px;">'+
-                    '<a href="#" id="bvi-panel-settings" class="bvi-panel-btn bvi-panel-btn-default bvi-panel-settings-close bvi-panel-btn-block" title="Закрыть"><i class="bvi-panel-glyphicon bvi-panel-glyphicon-remove"></i> '+bvi_lang[61]+'</a>'+
-                    '</div>'+
-                    '<div class="bvi-panel-col-xs-12 bvi-panel-col-sm-12 bvi-panel-col-md-12 bvi-panel-col-lg-12" style="margin-top: 15px;">'+
-                    '<a href="http://bvi.isvek.ru/" target="_blank" class="bvi-panel-team">bvi.isvek.ru: '+bvi_lang[34]+'</a>'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Кернинг</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-letter-spacing-normal" class="bvi-btn bvi-btn-default" title="Стандартный">Стандартный</a>'+
+                    '<a href="#" id="bvi-letter-spacing-average" class="bvi-btn bvi-btn-default" title="Средний">Средний</a>'+
+                    '<a href="#" id="bvi-letter-spacing-big" class="bvi-btn bvi-btn-default" title="Большой">Большой</a>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Интервал</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-line-height-normal" class="bvi-btn bvi-btn-default" title="Одинарный">Одинарный</a>'+
+                    '<a href="#" id="bvi-line-height-average" class="bvi-btn bvi-btn-default" title="Полуторный">Полуторный</a>'+
+                    '<a href="#" id="bvi-line-height-big" class="bvi-btn bvi-btn-default" title="Двойной">Двойной</a>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-title">Гарнитура</div>'+
+                    '<div class="bvi-btn-group">'+
+                    '<a href="#" id="bvi-font-family-default" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
+                    //'<a href="#" id="bvi-font-family-arial" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
+                    '<a href="#" id="bvi-font-family-times-new-roman" class="bvi-btn bvi-btn-default" title="С засечками">С засечками</a>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-btn-toolbar bvi-left">'+
+                    '<a href="#" id="bvi-flash-on" class="bvi-btn bvi-btn-default" title="Включить Фрейм"><i class="bvi-glyphicon bvi-glyphicon-flash"></i> Включить Фрейм</a>'+
+                    '<a href="#" id="bvi-flash-off" class="bvi-btn bvi-btn-default" title="Отключить Фрейм"><i class="bvi-glyphicon bvi-glyphicon-flash"></i> Выключить Фрейм</a>'+
+                    '<a href="#" id="bvi-settings-default" class="bvi-btn bvi-btn-default" title="Вернуть стандартные настройки"><i class="bvi-glyphicon bvi-glyphicon-refresh"></i> Вернуть стандартные настройки</a>'+
+                    '<a href="#" id="bvi-close" class="bvi-btn bvi-btn-default" title="Обычная версия сайта"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i> Обычная версия сайта</a>'+
+                    '</div>'+
+                    '<div class="bvi-btn-toolbar bvi-right">'+
+                    '<a href="#" id="bvi-settings-close" class="bvi-btn bvi-btn-default" title="Закрыть"><i class="bvi-glyphicon bvi-glyphicon-remove"></i> Закрыть</a>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
+                    '<div class="bvi-rows">'+
+                    '<div class="bvi-copy"><a href="http://bvi.isvek.ru/" target="_blank" title="isvek.ru Версия для слабовидящих">isvek.ru Версия для слабовидящих</a></div>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
-                    '</div>'
-                ).appendTo(".bvi-panel-menu");
-                bvi_body = $('<div class="bvi-body"></div>');
-                $('body').children().each(function(){
-                    $(this).appendTo(bvi_body);
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>').appendTo(".bvi-panel");
+            }
+
+            if (setting.BviPanelActive == 0 ) {
+                $('.bvi-panel-open-menu,'+selector).click( function () {
+                    Cookies.set("bvi-selector", selector, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-panel", setting.BviPanel, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-img", setting.BviPanelImg, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-reload", setting.BviPanelReload, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-reload", setting.BviPanelReload, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-voice", setting.BviPlay, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-flash", setting.BviFlash, {
+                        path: "/"
+                    });
+                    if (Cookies.get("bvi-voice") == '1') {
+                        responsiveVoice.speak("Версия сайта для слабовидящих", "Russian Female");
+                    }
+                    BviOn();
+                    return false;
                 });
-                $('body').html('').append(bvi_body);
-            } else {
-                $("#bvi-panel-close, .bvi-panel-close").remove();
+            }
+        },
+        Bvi: function (setting) {
+            function BviBgColor() {
+                if (Cookies.get("bvi-bgcolor") == 'white') {
+                    $('.bvi-body').addClass('bvi-color-white');
+                    $('.bvi-btn-white').addClass('active');
+                    BviReturnSet({
+                        backgroundcolor: "#ffffff",
+                        color: "#000000"
+                    });
+                    $('#bvi-color-text').html('Черным по белому');
+                } else {
+                    $('.bvi-body').removeClass('bvi-color-white');
+                    $('.bvi-btn-white').removeClass('active');
+                }
+
+                if (Cookies.get("bvi-bgcolor") == 'black') {
+                    $('.bvi-body').addClass('bvi-color-black');
+                    $('.bvi-btn-black').addClass('active');
+                    BviReturnSet({
+                        backgroundcolor: "#000000",
+                        color: "#ffffff"
+                    });
+                    $('#bvi-color-text').html('Белым по черному');
+                } else {
+                    $('.bvi-body').removeClass('bvi-color-black');
+                    $('.bvi-btn-black').removeClass('active');
+                }
+
+                if (Cookies.get("bvi-bgcolor") == 'blue') {
+                    $('.bvi-body').addClass('bvi-color-blue');
+                    $('.bvi-btn-blue').addClass('active');
+                    BviReturnSet({
+                        backgroundcolor: "#9DD1FF",
+                        color: "#063462"
+                    });
+                    $('#bvi-color-text').html('Темно-синим по голубому');
+                } else {
+                    $('.bvi-body').removeClass('bvi-color-blue');
+                    $('.bvi-btn-blue').removeClass('active');
+                }
+
+                if (Cookies.get("bvi-bgcolor") == 'brown') {
+                    $('.bvi-body').addClass('bvi-color-brown');
+                    $('.bvi-btn-brown').addClass('active');
+                    BviReturnSet({
+                        backgroundcolor: "#f7f3d6",
+                        color: "#4d4b43"
+                    });
+                    $('#bvi-color-text').html('Коричневым по бежевому');
+                } else {
+                    $('.bvi-body').removeClass('bvi-color-brown');
+                    $('.bvi-btn-brown').removeClass('active');
+                }
+
+                if (Cookies.get("bvi-bgcolor") == 'green') {
+                    $('.bvi-body').addClass('bvi-color-green');
+                    $('.bvi-btn-green').addClass('active');
+                    BviReturnSet({
+                        backgroundcolor: "#3B2716",
+                        color: "#A9E44D"
+                    });
+                    $('#bvi-color-text').html('Зеленым по темно-коричневому');
+                } else {
+                    $('.bvi-body').removeClass('bvi-color-green');
+                    $('.bvi-btn-green').removeClass('active');
+                }
+            }
+
+            function BviFontSize() {
+                size = Cookies.get("bvi-font-size");
+                if (size <= 100){
+                    BviReturnSet({
+                        fontsize: size
+                    });
+                }
+            }
+
+            function BviLetterSpacing() {
+                if (Cookies.get("bvi-letter-spacing") === "normal") {
+                    $("#bvi-letter-spacing-normal").addClass("active");
+                    BviReturnSet({
+                        letterspacing: "0px"
+                    })
+                } else {
+                    $("#bvi-letter-spacing-normal").removeClass("active")
+                }
+                if (Cookies.get("bvi-letter-spacing") === "average") {
+                    $("#bvi-letter-spacing-average").addClass("active");
+                    BviReturnSet({
+                        letterspacing: "2px"
+                    })
+                } else {
+                    $("#bvi-letter-spacing-average").removeClass("active")
+                }
+                if (Cookies.get("bvi-letter-spacing") === "big") {
+                    $("#bvi-letter-spacing-big").addClass("active");
+                    BviReturnSet({
+                        letterspacing: "4px"
+                    })
+                } else {
+                    $("#bvi-letter-spacing-big").removeClass("active")
+                }
+            }
+
+            function BviLineHeight() {
+                if (Cookies.get("bvi-line-height") === "normal") {
+                    $("#bvi-line-height-normal").addClass("active");
+                    BviReturnSet({
+                        lineheight: "1.5"
+                    })
+                } else {
+                    $("#bvi-line-height-normal").removeClass("active")
+                }
+                if (Cookies.get("bvi-line-height") === "average") {
+                    $("#bvi-line-height-average").addClass("active");
+                    BviReturnSet({
+                        lineheight: "2"
+                    })
+                } else {
+                    $("#bvi-line-height-average").removeClass("active")
+                }
+                if (Cookies.get("bvi-line-height") === "big") {
+                    $("#bvi-line-height-big").addClass("active");
+                    BviReturnSet({
+                        lineheight: "2.5"
+                    })
+                } else {
+                    $("#bvi-line-height-big").removeClass("active")
+                }
+            }
+
+            function BviFontFamily() {
+                if (Cookies.get("bvi-font-family") == "arial") {
+                    $("#bvi-font-family-arial").addClass("active");
+                    BviReturnSet({
+                        fontfamily: "Arial, sans-serif"
+                    })
+                } else {
+                    $("#bvi-font-family-arial").removeClass("active")
+                }
+                if (Cookies.get("bvi-font-family") == "times") {
+                    $("#bvi-font-family-times-new-roman").addClass("active");
+                    BviReturnSet({
+                        fontfamily: 'Times New roman'
+                    })
+                } else {
+                    $("#bvi-font-family-times-new-roman").removeClass("active")
+                }
+                if (Cookies.get("bvi-font-family") == "default") {
+                    $("#bvi-font-family-default").addClass("active");
+                    BviReturnSet({
+                        fontfamily: ''
+                    })
+                } else {
+                    $("#bvi-font-family-default").removeClass("active")
+                }
+            }
+
+            function BviFlash() {
+                if (Cookies.get("bvi-flash") == 1) {
+                    $('#bvi-flash-off').show();
+                    $('#bvi-flash-on').hide();
+                    $('iframe,video').show();
+                } else {
+                    $('#bvi-flash-on').show();
+                    $('#bvi-flash-off').hide();
+                    $('iframe,video').hide();
+                }
+            }
+
+            function BviReturnSet(setting) {
+                $("body, body *").not(".bvi-panel, .bvi-panel *, .fa, .glyphicon, .dashicons, .bvi-glyphicon").each(function () {
+                    $(this).css({
+                        "font-family": setting.fontfamily,
+                        "background-color": setting.backgroundcolor,
+                        "background-image": "none",
+                        "color": setting.color,
+                        "font-size": setting.fontsize + 'pt',
+                        "box-shadow": "none",
+                        "text-shadow": "none",
+                        "letter-spacing": setting.letterspacing,
+                        "border-color": setting.color,
+                        "line-height": setting.lineheight
+                    });
+                });
+                $("body").css({
+                    "margin": "0px",
+                    "padding": "0px"
+                });
+
+                var numbers = String(setting.fontsize);
+                var numbers = numbers.charAt(numbers.length-1);
+                var numbers = parseInt(numbers, 10);
+
+                if (numbers == 1) {
+                    var _numbers = 'пункт';
+                } else if ((numbers > 1) && (numbers < 5)) {
+                    var _numbers = 'пункта';
+                } else {
+                    var _numbers = 'пунктов';
+                }
+
+                $('#bvi-size-number').text(setting.fontsize);
+                $('#bvi-size-text').text(_numbers);
+
+            }
+            
+            function BviImg() {
+                if (Cookies.get("bvi-img") == '1') {
+
+                    $("#bvi-img-on").addClass('active');
+                    $("#bvi-img-grayscale").removeClass('active');
+                    $("#bvi-img-off").removeClass('active');
+
+                    $(".bvi-img-grayscale").remove();
+                    $(".bvi-img-off").remove();
+                    $(".bvi-img-on").remove();
+
+                    $("img").each(function() {
+                        $(".bvi-img-grayscale").remove();
+                        $(".bvi-img-off").remove();
+                        $(this).show();
+                    });
+                    $('#bvi-img-text').html('Включены');
+                } else if (Cookies.get("bvi-img") == '0') {
+
+                    $("#bvi-img-off").addClass('active');
+                    $("#bvi-img-grayscale").removeClass('active');
+                    $("#bvi-img-on").removeClass('active');
+
+                    $(".bvi-img-on").remove();
+                    $(".bvi-img-off").remove();
+                    $(".bvi-img-grayscale").remove();
+
+                    $("img").each(function() {
+                        var alt = this.alt || 'Нет описания к изображению';
+                        var imgClass = $(this).attr("class") || '';
+                        var imgId = $(this).attr("id") || 'bvi-img-off';
+                        $(this).hide();
+                        if (Cookies.get("bvi-img-XY") == '1') {
+                            $(this).after($('<div class="bvi-img-off '+imgClass+'" id="'+imgId+'" style="width: ' + $(this).width() + "px; height: " + $(this).height() + 'px">').html(alt))
+                        } else {
+                            $(this).after($('<div class="bvi-img-off">').text(alt))
+                        }
+                    });
+                    $('#bvi-img-text').html('Выключены');
+                } else if (Cookies.get("bvi-img") == 'grayScale') {
+
+                    $("#bvi-img-grayscale").addClass('active');
+                    $("#bvi-img-off").removeClass('active');
+                    $("#bvi-img-on").removeClass('active');
+
+                    $(".bvi-img-on").remove();
+                    $(".bvi-img-off").remove();
+                    $(".bvi-img-grayscale").remove();
+
+                    $("img").each(function() {
+                        var alt = this.alt || 'Нет описания к изображению';
+                        var src = this.src;
+                        var imgClass = $(this).attr("class") || 'bvi-class';
+                        var imgId = $(this).attr("id") || 'bvi-img-off';
+
+                        $(this).hide();
+                        $(this).after($('<img src="'+src+'" alt="'+alt+'" id="bvi-img-grayscale '+imgId+'" class="bvi-img-grayscale '+imgClass+'">'));
+                    });
+
+                    $('#bvi-img-text').html('Черно-белые');
+                } else {
+                    $("img").each(function() {
+                        $(".bvi-img-grayscale").remove();
+                        $(".bvi-img-off").remove();
+                        $(this).show();
+                    });
+                }
+            }
+
+            function BviVoice() {
+                if (Cookies.get("bvi-voice") === '1') {
+                    $('#bvi-voice-on').hide();
+                    $('#bvi-voice-off').show();
+                    function getSelectionText() {
+                        var text = "";
+                        if (window.getSelection) {
+                            text = window.getSelection().toString();
+                        } else if (document.selection && document.selection.type != "Control") {
+                            text = document.selection.createRange().text;
+                        }
+                        return text;
+                    }
+                    /*
+                    $(document).mouseup(function () {
+                        setTimeout(function () {
+                            responsiveVoice.cancel();
+                            responsiveVoice.speak(getSelectionText(), "Russian Female");
+                        }, 1);
+                        return false;
+                    });
+                    */
+                } else {
+                    responsiveVoice.cancel();
+                    $('#bvi-voice-on').show();
+                    $('#bvi-voice-off').hide();
+                }
+            }
+
+            $("#bvi-close, .bvi-panel-close").click(function() {
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Обычная версия сайта", "Russian Female");
+                }
+
+                $('.bvi-animated').removeClass('bvi-slideInDown').addClass('bvi-fadeOutUp');
+
                 $('*').each(function(){
                     $(this).removeAttr("style",'font-family');
                     $(this).removeAttr("style",'background-color');
@@ -931,46 +560,510 @@
                     $(this).removeAttr("style",'border-color');
                     $(this).attr("style",$(this).attr('data-bvi-original'));
                     $(this).removeAttr('data-bvi-original');
-                    $('svg').show();
                 });
-                $(BviCloseClassAndId).show();
-                if (Cookies.get("bvi-panel-reload") == "1") {
-                    document.location.reload(true)
+
+                $(setting.BviCloseClassAndId).show();
+                $('.bvi-panel-open-menu').removeClass('bvi-hide');
+                $(Cookies.get("bvi-selector")).removeClass('bvi-hide');
+                $(".bvi-panel, .bvi-panel-close").remove();
+                $(".bvi-img-off").remove();
+                $(".bvi-img-grayscale").remove();
+                $('body > .bvi-body').contents().unwrap();
+
+                if (Cookies.get("bvi-reload") == "1") {
+                    document.location.reload(true);
                 }
+
+                Cookies.remove("bvi-selector", {
+                    path: "/"
+                });
+
                 Cookies.remove("bvi-panel", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-bg", {
+
+                Cookies.remove("bvi-bgcolor", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-font-family", {
+
+                Cookies.remove("bvi-font-size", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-font-size", {
+
+                Cookies.remove("bvi-letter-spacing", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-letter-spacing", {
+
+                Cookies.remove("bvi-line-height", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-line-height", {
+
+                Cookies.remove("bvi-font-family", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-img", {
+
+                Cookies.remove("bvi-img", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-img-X-Y", {
+
+                Cookies.remove("bvi-img-XY", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-reload", {
+
+                Cookies.remove("bvi-reload", {
                     path: "/"
                 });
-                Cookies.remove("bvi-panel-play", {
+
+                Cookies.remove("bvi-voice", {
                     path: "/"
                 });
-                method.BviPlay();
-            }
+
+                Cookies.remove("bvi-flash", {
+                    path: "/"
+                });
+                BviBgColor();
+                BviFontSize();
+                BviLetterSpacing();
+                BviLineHeight();
+                BviFontFamily();
+                BviImg();
+                BviVoice();
+                BviFlash();
+                responsiveVoice.cancel();
+                $('iframe,video').show();
+                return false;
+            });
+
+            $("#bvi-flash-on").click(function() {
+                Cookies.set("bvi-flash", "1", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Включить фрейм", "Russian Female");
+                }
+                BviFlash();
+                return false;
+            });
+
+            $("#bvi-flash-off").click(function() {
+                Cookies.set("bvi-flash", "0", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Выключить фрейм", "Russian Female");
+                }
+                BviFlash();
+                return false;
+            });
+
+            $("#bvi-letter-spacing-normal").click(function() {
+                Cookies.set("bvi-letter-spacing", "normal", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Кернинг: Стандартный", "Russian Female");
+                }
+                BviLetterSpacing();
+                return false;
+            });
+
+            $("#bvi-letter-spacing-average").click(function() {
+                Cookies.set("bvi-letter-spacing", "average", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Кернинг: Средний", "Russian Female");
+                }
+                BviLetterSpacing();
+                return false;
+            });
+
+            $("#bvi-letter-spacing-big").click(function() {
+                Cookies.set("bvi-letter-spacing", "big", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Кернинг: Большой", "Russian Female");
+                }
+                BviLetterSpacing();
+                return false;
+            });
+
+            $("#bvi-font-size-minus").click(function() {
+                size = parseFloat(Cookies.get("bvi-font-size")) - 1;
+                $(this).addClass('active');
+                $('#bvi-font-size-plus').removeClass('active');
+
+                if (size >= 0) {
+                    Cookies.set("bvi-font-size", size, {
+                        path: "/"
+                    });
+
+                    BviFontSize();
+                    var numbers = String(size);
+                    var numbers = numbers.charAt(numbers.length-1);
+                    var numbers = parseInt(numbers, 10);
+
+                    if (numbers == 1) {
+                        var _numbers = 'пункт';
+                    } else if ((numbers > 1) && (numbers < 5)) {
+                        var _numbers = 'пункта';
+                    } else {
+                        var _numbers = 'пунктов';
+                    }
+
+                    if (Cookies.get("bvi-voice") == '1') {
+                        responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
+                    }
+                }
+                return false;
+            });
+
+            $("#bvi-font-size-plus").click(function() {
+                $(this).addClass('active');
+                $('#bvi-font-size-minus').removeClass('active');
+                size = parseFloat(Cookies.get("bvi-font-size")) + 1;
+
+                if (size <= 50) {
+                    Cookies.set("bvi-font-size", size, {
+                        path: "/"
+                    });
+
+                    BviFontSize();
+                    var numbers = String(size);
+                    var numbers = numbers.charAt(numbers.length-1);
+                    var numbers = parseInt(numbers, 10);
+
+                    if (numbers == 1) {
+                        var _numbers = 'пункт';
+                    } else if ((numbers > 1) && (numbers < 5)) {
+                        var _numbers = 'пункта';
+                    } else {
+                        var _numbers = 'пунктов';
+                    }
+
+                    if (Cookies.get("bvi-voice") == '1') {
+                        responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
+                    }
+                }
+                return false;
+            });
+
+            $("#bvi-voice-on").click(function() {
+                Cookies.set("bvi-voice", "1", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Синтез речи включён", "Russian Female");
+                }
+                BviVoice();
+                return false;
+            });
+
+            $("#bvi-voice-off").click(function() {
+                Cookies.set("bvi-voice", "0", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Синтез речи выключен", "Russian Female");
+                }
+                BviVoice();
+                return false;
+            });
+
+            $("#bvi-color-white").click(function() {
+                Cookies.set("bvi-bgcolor", "white", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Цвет сайта: Черным по белому", "Russian Female");
+                }
+                BviBgColor();
+                return false;
+            });
+
+            $("#bvi-color-black").click(function() {
+                Cookies.set("bvi-bgcolor", "black", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Цвет сайта: Белым по черному", "Russian Female");
+                }
+                BviBgColor();
+                return false;
+            });
+
+            $("#bvi-color-blue").click(function() {
+                Cookies.set("bvi-bgcolor", "blue", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Цвет сайта: Темно-синим по голубому", "Russian Female");
+                }
+                BviBgColor();
+                return false;
+            });
+
+            $("#bvi-color-brown").click(function() {
+                Cookies.set("bvi-bgcolor", "brown", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Цвет сайта: Коричневым по бежевому", "Russian Female");
+                }
+                BviBgColor();
+                return false;
+            });
+
+            $("#bvi-color-green").click(function() {
+                Cookies.set("bvi-bgcolor", "green", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Цвет сайта: Зеленым по темно-коричневому", "Russian Female");
+                }
+                BviBgColor();
+                return false;
+            });
+
+            $("#bvi-img-on").click(function() {
+                Cookies.set("bvi-img", "1", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Изображения включены", "Russian Female");
+                }
+                BviImg();
+                return false;
+            });
+
+            $("#bvi-img-off").click(function() {
+                Cookies.set("bvi-img", "0", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Изображения выключены", "Russian Female");
+                }
+                BviImg();
+                return false;
+            });
+
+            $("#bvi-img-grayscale").click(function() {
+                Cookies.set("bvi-img", "grayScale", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Изображения черно-белые", "Russian Female");
+                }
+                BviImg();
+                return false;
+            });
+
+            $("#bvi-settings, #bvi-settings-close").click(function() {
+                $(".bvi-settings").slideToggle("slow");
+                $("#bvi-settings").toggleClass('active');
+                return false;
+            });
+
+            $("#bvi-line-height-normal").click(function() {
+                Cookies.set("bvi-line-height", "normal", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Интервал: Одинарный", "Russian Female");
+                }
+                BviLineHeight();
+                return false;
+            });
+
+            $("#bvi-line-height-average").click(function() {
+                Cookies.set("bvi-line-height", "average", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Интервал: Полуторный", "Russian Female");
+                }
+                BviLineHeight();
+                return false;
+            });
+
+            $("#bvi-line-height-big").click(function() {
+                Cookies.set("bvi-line-height", "big", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Интервал: Двойной", "Russian Female");
+                }
+                BviLineHeight();
+                return false;
+            });
+
+            $("#bvi-font-family-arial").click(function() {
+                Cookies.set("bvi-font-family", "arial", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Гарнитура: Без засечек", "Russian Female");
+                }
+                BviFontFamily();
+                return false;
+            });
+
+            $("#bvi-font-family-times-new-roman").click(function() {
+                Cookies.set("bvi-font-family", "times", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Гарнитура: С засечками", "Russian Female");
+                }
+                BviFontFamily();
+                return false;
+            });
+
+            $("#bvi-font-family-default").click(function() {
+                Cookies.set("bvi-font-family", "default", {
+                    path: "/"
+                });
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Гарнитура: Без засечек", "Russian Female");
+                }
+                BviFontFamily();
+                return false;
+            });
+
+            $("#bvi-settings-default").click(function() {
+                Cookies.set("bvi-panel", setting.BviPanel, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
+                    path: "/"
+                });
+                Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-img", setting.BviPanelImg, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-reload", setting.BviPanelReload, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-voice", setting.BviPlay, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-flash", setting.BviFlash, {
+                    path: "/"
+                });
+
+                if (Cookies.get("bvi-voice") == '1') {
+                    responsiveVoice.speak("Стандартные настройки", "Russian Female");
+                }
+                BviBgColor();
+                BviFontSize();
+                BviLetterSpacing();
+                BviLineHeight();
+                BviFontFamily();
+                BviImg();
+                BviVoice();
+                BviFlash();
+                return false;
+            });
+
+            BviBgColor();
+            BviFontSize();
+            BviLetterSpacing();
+            BviLineHeight();
+            BviFontFamily();
+            BviImg();
+            BviVoice();
+            BviFlash();
+        },
+        Active: function (setting) {
+            var selector = $(this).selector;
+            var setting = $.extend({
+                BviPanel: 1,
+                BviPanelActive: 1,
+                BviPanelBg: "white",
+                BviPanelFontFamily: "default",
+                BviPanelFontSize: "12",
+                BviPanelLetterSpacing: "normal",
+                BviPanelLineHeight: "normal",
+                BviPanelImg: 1,
+                BviPanelImgXY: 1,
+                BviPanelReload: 0,
+                BviPanelText: 'Версия для слабовидящих',
+                BviPanelCloseText: 'Обычная версия сайта',
+                BviCloseClassAndId: '',
+                BviFixPanel: 1,
+                BviPlay: 0,
+                BviFlash: 0
+            }, setting);
+
+            Cookies.set("bvi-selector", selector, {
+                path: "/"
+            });
+            Cookies.set("bvi-panel", setting.BviPanel, {
+                path: "/"
+            });
+            Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
+                path: "/"
+            });
+            Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
+                path: "/"
+            });
+            Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
+                path: "/"
+            });
+            Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
+                path: "/"
+            });
+            Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
+                path: "/"
+            });
+            Cookies.set("bvi-img", setting.BviPanelImg, {
+                path: "/"
+            });
+            Cookies.set("bvi-reload", setting.BviPanelReload, {
+                path: "/"
+            });
+            Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
+                path: "/"
+            });
+            Cookies.set("bvi-reload", setting.BviPanelReload, {
+                path: "/"
+            });
+            Cookies.set("bvi-voice", setting.BviPlay, {
+                path: "/"
+            });
+            Cookies.set("bvi-flash", setting.BviFlash, {
+                path: "/"
+            });
+            method.Init(setting);
+            $('.bvi-panel-open-menu,'+selector).remove();
+            $('#bvi-close,#bvi-close').hide();
         }
     };
+
     $.fn.bvi = function(setting) {
         if (method[setting]) {
             return method[setting].apply(this, Array.prototype.slice.call(arguments, 1))

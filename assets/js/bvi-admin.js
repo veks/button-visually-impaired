@@ -1,3 +1,6 @@
+/*!
+ * Button visually impaired v1.0.5
+ */
 jQuery(document).ready(function($){
     $("#bvi_settings_save").submit(function(e){
         e.preventDefault();

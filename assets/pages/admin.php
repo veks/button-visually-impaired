@@ -39,11 +39,12 @@
                 </th>
                 <td>
                     <select name="BviPanelFontSize" id="BviPanelFontSize" class="postform">
-                        <option class="level-0" value="14" <?php selected( $this->get_option['BviPanelFontSize'], '14' ); ?>>14 px</option>
-                        <option class="level-0" value="16" <?php selected( $this->get_option['BviPanelFontSize'], '16' ); ?>>16 px</option>
-                        <option class="level-0" value="18" <?php selected( $this->get_option['BviPanelFontSize'], '18' ); ?>>18 px</option>
-                        <option class="level-0" value="20" <?php selected( $this->get_option['BviPanelFontSize'], '20' ); ?>>20 px</option>
-                        <option class="level-0" value="23" <?php selected( $this->get_option['BviPanelFontSize'], '23' ); ?>>23 px</option>
+                    <?php
+                    for ($i = 1;$i <= 50; $i++ )
+                    {
+                        echo '<option class="level-0" value="'.$i.'"  '.selected( $this->get_option['BviPanelFontSize'], $i ).' >'.$i.' pt</option>';
+                    }
+                    ?>
                     </select>
                 </td>
             </tr>
@@ -53,9 +54,9 @@
                 </th>
                 <td>
                     <select name="BviPanelLetterSpacing" id="BviPanelLetterSpacing" class="postform">
-                        <option class="level-0" value="normal"  <?php selected( $this->get_option['BviPanelLetterSpacing'], 'normal' ); ?>><?php echo _e('Стандартный', 'bvi_languages'); ?></option>
-                        <option class="level-0" value="average" <?php selected( $this->get_option['BviPanelLetterSpacing'], 'average' ); ?>><?php echo _e('Средний', 'bvi_languages'); ?></option>
-                        <option class="level-0" value="big"     <?php selected( $this->get_option['BviPanelLetterSpacing'], 'big' ); ?>><?php echo _e('Большой', 'bvi_languages'); ?></option>
+                        <option class="level-0" value="normal"  <?php selected( $this->get_option['BviPanelLetterSpacing'], 'normal' ); ?>><?php echo _e('Одинарный', 'bvi_languages'); ?></option>
+                        <option class="level-0" value="average" <?php selected( $this->get_option['BviPanelLetterSpacing'], 'average' ); ?>><?php echo _e('Полуторный', 'bvi_languages'); ?></option>
+                        <option class="level-0" value="big"     <?php selected( $this->get_option['BviPanelLetterSpacing'], 'big' ); ?>><?php echo _e('Двойной', 'bvi_languages'); ?></option>
                     </select>
                 </td>
             </tr>
@@ -178,23 +179,12 @@
                 </th>
                 <td>
                     <select name="BviSizeIcon" id="BviSizeIcon" class="postform">
-                        <option class="level-0" value="18" <?php selected( $this->get_option['BviSizeIcon'], '18' ); ?>>18px</option>
-                        <option class="level-0" value="20" <?php selected( $this->get_option['BviSizeIcon'], '20' ); ?>>20px</option>
-                        <option class="level-0" value="22" <?php selected( $this->get_option['BviSizeIcon'], '22' ); ?>>22px</option>
-                        <option class="level-0" value="24" <?php selected( $this->get_option['BviSizeIcon'], '24' ); ?>>24px</option>
-                        <option class="level-0" value="26" <?php selected( $this->get_option['BviSizeIcon'], '26' ); ?>>26px</option>
-                        <option class="level-0" value="28" <?php selected( $this->get_option['BviSizeIcon'], '28' ); ?>>28px</option>
-                        <option class="level-0" value="30" <?php selected( $this->get_option['BviSizeIcon'], '30' ); ?>>30px</option>
-                        <option class="level-0" value="32" <?php selected( $this->get_option['BviSizeIcon'], '32' ); ?>>32px</option>
-                        <option class="level-0" value="34" <?php selected( $this->get_option['BviSizeIcon'], '34' ); ?>>34px</option>
-                        <option class="level-0" value="36" <?php selected( $this->get_option['BviSizeIcon'], '36' ); ?>>36px</option>
-                        <option class="level-0" value="38" <?php selected( $this->get_option['BviSizeIcon'], '38' ); ?>>38px</option>
-                        <option class="level-0" value="40" <?php selected( $this->get_option['BviSizeIcon'], '40' ); ?>>40px</option>
-                        <option class="level-0" value="42" <?php selected( $this->get_option['BviSizeIcon'], '42' ); ?>>42px</option>
-                        <option class="level-0" value="44" <?php selected( $this->get_option['BviSizeIcon'], '44' ); ?>>44px</option>
-                        <option class="level-0" value="46" <?php selected( $this->get_option['BviSizeIcon'], '46' ); ?>>46px</option>
-                        <option class="level-0" value="48" <?php selected( $this->get_option['BviSizeIcon'], '48' ); ?>>48px</option>
-                        <option class="level-0" value="50" <?php selected( $this->get_option['BviSizeIcon'], '50' ); ?>>50px</option>
+                        <?php
+                        for ($i = 1;$i <= 50; $i++ )
+                        {
+                            echo '<option class="level-0" value="'.$i.'"  '.selected( $this->get_option['BviSizeIcon'], $i ).' >'.$i.' px</option>';
+                        }
+                        ?>
                     </select>
                 </td>
             </tr>
@@ -204,15 +194,12 @@
                 </th>
                 <td>
                     <select name="BviSizeText" id="BviSizeText" class="postform">
-                        <option class="level-0" value="12" <?php selected( $this->get_option['BviSizeText'], '12' ); ?>>12px</option>
-                        <option class="level-0" value="13" <?php selected( $this->get_option['BviSizeText'], '13' ); ?>>13px</option>
-                        <option class="level-0" value="14" <?php selected( $this->get_option['BviSizeText'], '14' ); ?>>14px</option>
-                        <option class="level-0" value="15" <?php selected( $this->get_option['BviSizeText'], '15' ); ?>>15px</option>
-                        <option class="level-0" value="16" <?php selected( $this->get_option['BviSizeText'], '16' ); ?>>16px</option>
-                        <option class="level-0" value="17" <?php selected( $this->get_option['BviSizeText'], '17' ); ?>>17px</option>
-                        <option class="level-0" value="18" <?php selected( $this->get_option['BviSizeText'], '18' ); ?>>18px</option>
-                        <option class="level-0" value="19" <?php selected( $this->get_option['BviSizeText'], '19' ); ?>>19px</option>
-                        <option class="level-0" value="20" <?php selected( $this->get_option['BviSizeText'], '20' ); ?>>20px</option>
+                        <?php
+                        for ($i = 1;$i <= 50; $i++ )
+                        {
+                            echo '<option class="level-0" value="'.$i.'"  '.selected( $this->get_option['BviSizeText'], $i ).' >'.$i.' px</option>';
+                        }
+                        ?>
                     </select>
                 </td>
             </tr>
