@@ -1,0 +1,285 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Button visually impaired\n"
+"POT-Creation-Date: 2017-08-14 11:31+0300\n"
+"PO-Revision-Date: 2017-08-14 11:58+0300\n"
+"Last-Translator: \n"
+"Language-Team: isvek <oleg@isvek.ru>\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.10\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: Button-visually-impaired.php\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: Button-visually-impaired.php:260
+msgid "Документация"
+msgstr "Документація"
+
+#: Button-visually-impaired.php:261
+msgid "Дополнительная информация находится по адресу"
+msgstr "Додаткова інформація знаходиться за адресою"
+
+#: Button-visually-impaired.php:265
+msgid "Контакты"
+msgstr "Контакти"
+
+#: Button-visually-impaired.php:266
+msgid "По всем вопросам пишите на почту"
+msgstr "З усіх питань пишіть на пошту"
+
+#: Button-visually-impaired.php:266
+msgid "или воспользуйтесь"
+msgstr "або скористайтеся"
+
+#: Button-visually-impaired.php:266
+msgid "формой обратной связи"
+msgstr "формою зворотного зв'язку"
+
+#: Button-visually-impaired.php:301
+msgid "Страница не найдена"
+msgstr "Сторінка не знайдена"
+
+#: Button-visually-impaired.php:351
+msgid "Настройки сохранены"
+msgstr "Налаштування збережені"
+
+#: Button-visually-impaired.php:355
+msgid "Ошибка базы данных"
+msgstr "Помилка бази даних"
+
+#: Button-visually-impaired.php:362
+msgid "Ошибка доступа"
+msgstr "Помилка доступу"
+
+#: Button-visually-impaired.php:448
+msgid "Настройки сброшены"
+msgstr "налаштування скинуті"
+
+#: Button-visually-impaired.php:469 Button-visually-impaired.php:491
+#: Button-visually-impaired.php:525
+msgid "Версия для слабовидящих"
+msgstr "Версія для людей з вадами зору"
+
+#: Button-visually-impaired.php:470
+msgid "Обычная версия сайта"
+msgstr "Звичайна версія сайту"
+
+#: Button-visually-impaired.php:529 assets/pages/admin.php:173
+msgid "Фон кнопки"
+msgstr "Фон кнопки"
+
+#: Button-visually-impaired.php:530
+msgid "Цвет текста кнопки иконки"
+msgstr "Колір тексту кнопки іконки"
+
+#: assets/pages/admin.php:2
+msgid "Плагин"
+msgstr "Плагін"
+
+#: assets/pages/admin.php:4
+msgid "Помочь проекту"
+msgstr "Допомогти проекту"
+
+#: assets/pages/admin.php:6
+msgid "Основные настройки"
+msgstr "Основні налаштування"
+
+#: assets/pages/admin.php:7
+msgid "Настройки панели слабовидящих"
+msgstr "Налаштування панелі слабозорих"
+
+#: assets/pages/admin.php:13
+msgid "Включить плагин?"
+msgstr "Включити плагін?"
+
+#: assets/pages/admin.php:17 assets/pages/admin.php:28
+#: assets/pages/admin.php:93 assets/pages/admin.php:104
+#: assets/pages/admin.php:115 assets/pages/admin.php:127
+#: assets/pages/admin.php:223
+msgid "Включить"
+msgstr "Увімкнути"
+
+#: assets/pages/admin.php:18 assets/pages/admin.php:29
+#: assets/pages/admin.php:94 assets/pages/admin.php:105
+#: assets/pages/admin.php:116 assets/pages/admin.php:128
+#: assets/pages/admin.php:224
+msgid "Выключить"
+msgstr "Вимкнути"
+
+#: assets/pages/admin.php:24
+msgid "Автостарт панели"
+msgstr "Автостарт панелі"
+
+#: assets/pages/admin.php:35
+msgid "Цвета сайта"
+msgstr "Кольори сайту"
+
+#: assets/pages/admin.php:39
+msgid "Белым по черному"
+msgstr "Білим по чорному"
+
+#: assets/pages/admin.php:40
+msgid "Черным по белому"
+msgstr "Чорним по білому"
+
+#: assets/pages/admin.php:41
+msgid "Темно-синим по голубому"
+msgstr "Темно-синім по блакитному"
+
+#: assets/pages/admin.php:42
+msgid "Коричневым по бежевому"
+msgstr "Коричневим по бежевому"
+
+#: assets/pages/admin.php:43
+msgid "Зеленым по темно-коричневому"
+msgstr "Зеленим по темно-коричневому"
+
+#: assets/pages/admin.php:49
+msgid "Размер шрифта"
+msgstr "Розмір шрифту"
+
+#: assets/pages/admin.php:64
+msgid "Интервал между буквами"
+msgstr "Інтервал між буквами"
+
+#: assets/pages/admin.php:68
+msgid "Одинарный"
+msgstr "Одинарний"
+
+#: assets/pages/admin.php:69
+msgid "Полуторный"
+msgstr "Полуторний"
+
+#: assets/pages/admin.php:70
+msgid "Двойной"
+msgstr "Подвійний"
+
+#: assets/pages/admin.php:76
+msgid "Интервал между строками"
+msgstr "Інтервал між буквами"
+
+#: assets/pages/admin.php:80
+msgid "Стандартный"
+msgstr "Стандартний"
+
+#: assets/pages/admin.php:81
+msgid "Средний"
+msgstr "Середній"
+
+#: assets/pages/admin.php:82
+msgid "Большой"
+msgstr "Великий"
+
+#: assets/pages/admin.php:88
+msgid "Изображения"
+msgstr "Зображення"
+
+#: assets/pages/admin.php:92
+msgid "Черно-белые"
+msgstr "Чорно-білі"
+
+#: assets/pages/admin.php:100
+msgid "Сохранение размера исходного изображения"
+msgstr "Збереження розміру вихідного зображення"
+
+#: assets/pages/admin.php:111
+msgid "Перезагрузка страницы"
+msgstr "Перезавантаження сторінки"
+
+#: assets/pages/admin.php:123
+msgid "Синтез речи"
+msgstr "Синтез мови"
+
+#: assets/pages/admin.php:134
+msgid "Зафиксировать панель настроек вверху страницы"
+msgstr "Зафіксувати панель налаштувань у верхній частині сторінки"
+
+#: assets/pages/admin.php:142
+msgid "Отключить"
+msgstr "Відключити"
+
+#: assets/pages/admin.php:146
+msgid ""
+"Впишите название <u>class</u> или <u>id</u> через запятую для отключение при "
+"включении версии для слабовидящих."
+msgstr ""
+"Впишіть назву <u> class </ u> або <u> id </ u> через кому для відключення "
+"при включенні версії для слабозорих."
+
+#: assets/pages/admin.php:148
+msgid "Например"
+msgstr "Наприклад"
+
+#: assets/pages/admin.php:150
+msgid ""
+"Правильно вводите название класса или ид иначе плагин не будет работать."
+msgstr "Правильно вводите назву класу або ід інакше доданок не буде працювати."
+
+#: assets/pages/admin.php:155 assets/pages/admin.php:164
+msgid "Название ссылки"
+msgstr "Назва посилання"
+
+#: assets/pages/admin.php:159
+msgid "Название ссылки включения плагина виджет"
+msgstr "Назва посилання включення плагіна віджет"
+
+#: assets/pages/admin.php:168
+msgid "Название ссылки выключения плагина"
+msgstr "Назва посилання вимикання плагіна"
+
+#: assets/pages/admin.php:181
+msgid "Цвет текста кнопки и иконки"
+msgstr "Колір тексту кнопки та іконки"
+
+#: assets/pages/admin.php:189
+msgid "Размер иконки"
+msgstr "Розмір іконки"
+
+#: assets/pages/admin.php:204
+msgid "Размер шрифта кнопки"
+msgstr "Розмір шрифту кнопки"
+
+#: assets/pages/admin.php:219
+msgid "<u>Включите</u> если плагин не работает"
+msgstr "<u>Увімкніть </u> якщо плагін не працює"
+
+#: assets/pages/admin.php:233
+msgid "Сохранить настройки"
+msgstr "Зберегти налаштування"
+
+#: assets/pages/admin.php:239
+msgid "Сбросить настройки"
+msgstr "Скинути налаштування"
+
+#. Plugin Name of the plugin/theme
+msgid "Button visually impaired"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.bvi.isvek.ru/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Версия плагина для слабовидящих."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Vek"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.bvi.isvek.ru/vek"
+msgstr ""
+
+#~ msgid "Авто старт панели"
+#~ msgstr "Авто старт панелі"
