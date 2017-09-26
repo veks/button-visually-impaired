@@ -1,7 +1,10 @@
 /*!
- * Button visually impaired v1.0.5
+ * Button visually impaired v1.0.6
  */
 jQuery(document).ready(function($) {
-    //$('.bvi-panel-open').bvi('Active',bvi);
-    $('.bvi-panel-open').bvi('Init',bvi);
+    if (bvi['bvi_setting'].BviPanelActive == 1) {
+        $().bvi('Active', bvi['bvi_setting']);
+    } else {
+        $('.bvi-panel-open').bvi('Init', bvi['bvi_setting']);
+    }
 });

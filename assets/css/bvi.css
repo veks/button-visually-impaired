@@ -1,5 +1,5 @@
 /*!
- * Button visually impaired bvi.css v1.0.5
+ * Button visually impaired bvi.css v1.0.6
  */
 body .bvi-body {
   padding: 0px;
@@ -215,7 +215,8 @@ body .bvi-body.bvi-color-green *:before {
     font-size: 12px !important;
     font-weight: 400;
   }
-  .bvi-panel .bvi-title {
+  .bvi-panel .bvi-title,
+  .bvi-panel .bvi-title-header {
     margin-top: 13px;
     border: 1px solid #b9b9b9;
     background: #d7d7d7;
@@ -913,6 +914,9 @@ body .bvi-body.bvi-color-green *:before {
   position: fixed;
   z-index: 999999;
 }
+.bvi-panel.bvi-panel-fixed .bvi-btn-panel-show {
+  opacity: 0.8;
+}
 .bvi-panel .bvi-panel-menu * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -922,19 +926,24 @@ body .bvi-body.bvi-color-green *:before {
   display: inline-block;
   width: 100%;
 }
+.bvi-panel .bvi-vertical {
+  border: 0;
+  border-right: 2px solid #d8d8d8;
+}
 .bvi-panel .bvi-rows {
   margin: 10px;
 }
 .bvi-panel .bvi-bg {
   color: #000000;
   background: #f8f8f8 !important;
-  padding: 4px;
+  padding: 0px;
   border: 1px solid #fcfcfc;
   moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
   webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
 }
-.bvi-panel .bvi-title {
+.bvi-panel .bvi-title,
+.bvi-panel .bvi-title-header {
   font-weight: bold;
   font-size: larger;
   margin-bottom: 13px;
@@ -966,6 +975,22 @@ body .bvi-body.bvi-color-green *:before {
 .bvi-panel .bvi-copy a:visited {
   color: #000000;
   text-decoration: underline;
+}
+.bvi-panel .bvi-panel-show {
+  text-align: right;
+}
+.bvi-panel .bvi-panel-show .bvi-glyphicon {
+  font-size: 40px;
+}
+.bvi-panel .bvi-panel-show .bvi-btn-panel-show {
+  background: #F8F8F8 !important;
+  padding: 15px;
+  margin: 0px 20px 0px 20px;
+  color: black !important;
+  border: 1px solid #fcfcfc !important;
+  moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
+  webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
 }
 .bvi-panel .bvi-btn {
   font-weight: bold;
@@ -1223,6 +1248,9 @@ fieldset[disabled] a.bvi-panel .bvi-btn {
 .bvi-glyphicon-flash:before {
   content: "\e162";
 }
+.bvi-glyphicon-arrow-up:before {
+  content: "\e093";
+}
 .bvi-animated {
   -webkit-animation-duration: 1s;
   animation-duration: 1s;
@@ -1288,7 +1316,4 @@ fieldset[disabled] a.bvi-panel .bvi-btn {
     -webkit-transform: translate3d(0, -2000px, 0);
     transform: translate3d(0, -2000px, 0);
   }
-}
-.someclass:hover {
-  background: #ff23b3;
 }

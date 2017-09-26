@@ -1,8 +1,18 @@
 /*!
- * Button visually impaired v1.0.5
+ * Button visually impaired v1.0.6
  */
 (function($) {
     var method = {
+        BviConsoleLog: function (setting, fun, param) {
+            if (setting == 1 ) {
+                $.each(param, function (id, value) {
+                    console.log('console.log.bvi - ' + fun + ' | [' + id + ' - (' + value + ')]');
+                });
+
+            } else {
+                console.log('Bvi [console.log.bvi - off]');
+            }
+        },
         Init: function(setting) {
             var selector = $(this).selector;
             var setting = $.extend({
@@ -21,15 +31,18 @@
                 BviCloseClassAndId: '',
                 BviFixPanel: 1,
                 BviPlay: 0,
-                BviFlash: 0
+                BviFlash: 0,
+                BviConsoleLog: 1,
+                BviPanelHide: 0
             }, setting);
 
-            console.log('Button visually impaired v1.0.5');
+            console.log('Button visually impaired v1.0.6');
 
             function BviOn() {
+
                 if (Cookies.get("bvi-panel") == '1') {
-                    $('*').each(function(){
-                        if (!$(this).attr('data-bvi-original')) $(this).attr('data-bvi-original',$(this).attr('style'));
+                    $('*').each(function () {
+                        if (!$(this).attr('data-bvi-original')) $(this).attr('data-bvi-original', $(this).attr('style'));
                     });
                     BviPanel();
                     method.Bvi(setting);
@@ -44,10 +57,8 @@
                 $(selector).after($('<a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i> '+setting.BviPanelCloseText+'</a>'));
                 $('.bvi-panel-open-menu').after($('<li class="bvi-panel-close"><a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"> '+setting.BviPanelCloseText+'</a></li>'));
                 $(setting.BviCloseClassAndId).hide();
-
                 $('body').wrapInner('<div class="bvi-body"></div>');//wrapInner
                 $('<div class="bvi-panel"></div>').prependTo("body");
-
                 var scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
                 if (setting.BviFixPanel == '1') {
                     if (scroll > 99) {
@@ -67,20 +78,31 @@
                                 "z-index": 999999,
                                 "margin-bottom": "20px"
                             });
+                            $('.bvi-title').hide();
+                            $('#bvi-color-text').hide();
+                            $('#bvi-img-text').hide();
+                            $('#bvi-size-text').hide();
+                            $('#bvi-size-number').hide();
                         } else {
                             $(".bvi-panel").removeClass("bvi-panel-fixed");
                             $(".bvi-panel").removeAttr("style");
+                            $('.bvi-title').show();
+                            $('#bvi-color-text').show();
+                            $('#bvi-img-text').show();
+                            $('#bvi-size-text').show();
+                            $('#bvi-size-number').show();
                         }
                     });
                 }
+
                 $('<div class="bvi-container">'+
                     '<div class="bvi-row">'+
                     '<div class="bvi-panel-menu">'+
                     '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12 bvi-bg bvi-animated bvi-slideInDown">'+
                     '<div class="bvi-row">'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-2 bvi-col-lg-3">'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-2 bvi-col-lg-2 bvi-vertical">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Размер шрифта</div>'+
+                    '<div class="bvi-title-header">Размер шрифта</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-font-size-minus" class="bvi-btn bvi-btn-default" title="Уменьшить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>-</b></a>'+
                     '<a href="#" id="bvi-font-size-plus" class="bvi-btn bvi-btn-default" title="Увеличить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>+</b></a>'+
@@ -88,9 +110,9 @@
                     '<div class="bvi-title-text"><span id="bvi-size-number"></span> <span id="bvi-size-text"></span></div>'+
                     '</div>'+
                     '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-3">'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-3 bvi-vertical">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Цвета сайта</div>'+
+                    '<div class="bvi-title-header">Цвета сайта</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-color-white" class="bvi-btn bvi-btn-white" title="Цвет сайта: Черным по белому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
                     '<a href="#" id="bvi-color-black" class="bvi-btn bvi-btn-black" title="Цвет сайта: Белым по черному"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
@@ -101,9 +123,9 @@
                     '<div class="bvi-title-text"><span id="bvi-color-text"></span></div>'+
                     '</div>'+
                     '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3">'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3 bvi-vertical">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Изображения</div>'+
+                    '<div class="bvi-title-header">Изображения</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-img-on" class="bvi-btn bvi-btn-default" title="Включить" style="color: green"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
                     '<a href="#" id="bvi-img-off" class="bvi-btn bvi-btn-default" title="Выключить" style="color: red"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
@@ -112,16 +134,17 @@
                     '<div class="bvi-title-text"><span id="bvi-img-text"></span></div>'+
                     '</div>'+
                     '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3">'+
+                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-4">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Дополнительно</div>'+
-                    '<div class="bvi-btn-toolbar">'+
+                    '<div class="bvi-title-header">Дополнительно</div>'+
+                    '<div class="bvi-btn-group">'+
+                    //'<div class="bvi-btn-toolbar">'+
                     '<a href="#" id="bvi-voice-off" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-off"></i></a>'+
                     '<a href="#" id="bvi-voice-on" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-up"></i></a>'+
-                    '</div>'+
-                    '<div class="bvi-btn-group">'+
+                    ///'</div>'+
                     '<a href="#" id="bvi-settings" class="bvi-btn bvi-btn-default" title="Настройки"><i class="bvi-glyphicon bvi-glyphicon-cog"></i> Настройки</a>'+
                     '<a href="#" id="bvi-close" class="bvi-btn bvi-btn-default" title="Обычная версия сайта"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i></a>'+
+                    '<a href="#" id="bvi-panel-hide" class="bvi-btn bvi-btn-default" title="Свернуть панель для слабовидящих"><i class="bvi-glyphicon bvi-glyphicon-arrow-up"></i></a>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
@@ -132,7 +155,7 @@
                     '<hr>'+
                     '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Кернинг</div>'+
+                    '<div class="bvi-title-header">Кернинг</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-letter-spacing-normal" class="bvi-btn bvi-btn-default" title="Стандартный">Стандартный</a>'+
                     '<a href="#" id="bvi-letter-spacing-average" class="bvi-btn bvi-btn-default" title="Средний">Средний</a>'+
@@ -142,7 +165,7 @@
                     '</div>'+
                     '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Интервал</div>'+
+                    '<div class="bvi-title-header">Интервал</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-line-height-normal" class="bvi-btn bvi-btn-default" title="Одинарный">Одинарный</a>'+
                     '<a href="#" id="bvi-line-height-average" class="bvi-btn bvi-btn-default" title="Полуторный">Полуторный</a>'+
@@ -152,7 +175,7 @@
                     '</div>'+
                     '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-title">Гарнитура</div>'+
+                    '<div class="bvi-title-header">Гарнитура</div>'+
                     '<div class="bvi-btn-group">'+
                     '<a href="#" id="bvi-font-family-default" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
                     //'<a href="#" id="bvi-font-family-arial" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
@@ -175,7 +198,7 @@
                     '</div>'+
                     '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
                     '<div class="bvi-rows">'+
-                    '<div class="bvi-copy"><a href="http://bvi.isvek.ru/" target="_blank" title="isvek.ru Версия для слабовидящих">isvek.ru Версия для слабовидящих</a></div>'+
+                    '<div class="bvi-copy"><a href="http://bvi.isvek.ru/" target="_blank" title="isvek.ru Версия для слабовидящих">isvek.ru Версия для слабовидящих</a><sup>v1.0.6</sup></div>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
@@ -183,6 +206,7 @@
                     '</div>'+
                     '</div>'+
                     '</div>'+
+                    '<div class="bvi-panel-show"><a href="#" id="bvi-panel-show" class="bvi-btn-panel-show" title="Показать панель для слабовидящих"><i class="bvi-glyphicon bvi-glyphicon-eye"></i></a></div>'+
                     '</div>'+
                     '</div>').appendTo(".bvi-panel");
             }
@@ -226,6 +250,12 @@
                         path: "/"
                     });
                     Cookies.set("bvi-flash", setting.BviFlash, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-console-log", setting.BviConsoleLog, {
+                        path: "/"
+                    });
+                    Cookies.set("bvi-panel-hide", setting.BviPanelHide, {
                         path: "/"
                     });
                     if (Cookies.get("bvi-voice") == '1') {
@@ -304,6 +334,17 @@
                 }
             }
 
+            function BviPanelHide() {
+                if (Cookies.get("bvi-panel-hide") == '1') {
+                    $('.bvi-panel-menu').hide();//slideToggle("slow");
+                    $('#bvi-panel-hide').show();
+                    $('#bvi-panel-show').show();
+                } else {
+                    $('.bvi-panel-menu').show();
+                    $('#bvi-panel-show').hide();
+                }
+
+            }
             function BviFontSize() {
                 size = Cookies.get("bvi-font-size");
                 if (size <= 100){
@@ -621,6 +662,10 @@
                 Cookies.remove("bvi-flash", {
                     path: "/"
                 });
+
+                Cookies.remove("bvi-panel-hide", {
+                    path: "/"
+                });
                 BviBgColor();
                 BviFontSize();
                 BviLetterSpacing();
@@ -629,6 +674,7 @@
                 BviImg();
                 BviVoice();
                 BviFlash();
+                BviPanelHide();
                 responsiveVoice.cancel();
                 $('iframe,video').show();
                 return false;
@@ -712,6 +758,7 @@
                         var _numbers = 'пунктов';
                     }
 
+                    method.BviConsoleLog(setting.BviConsoleLog, "click", {"bvi-font-size[]":"Размер шрифта: "+ size +" "+ _numbers});
                     if (Cookies.get("bvi-voice") == '1') {
                         responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
                     }
@@ -742,6 +789,7 @@
                         var _numbers = 'пунктов';
                     }
 
+                    method.BviConsoleLog(setting.BviConsoleLog, "click", {"bvi-font-size[]":"Размер шрифта: "+ size +" "+ _numbers});
                     if (Cookies.get("bvi-voice") == '1') {
                         responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
                     }
@@ -753,6 +801,7 @@
                 Cookies.set("bvi-voice", "1", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-voice[1]':'Синтез речи включён'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Синтез речи включён", "Russian Female");
                 }
@@ -764,6 +813,7 @@
                 Cookies.set("bvi-voice", "0", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-voice[0]':'Синтез речи выключен'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Синтез речи выключен", "Russian Female");
                 }
@@ -775,6 +825,7 @@
                 Cookies.set("bvi-bgcolor", "white", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[white]':'Цвет сайта: Черным по белому'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Цвет сайта: Черным по белому", "Russian Female");
                 }
@@ -786,6 +837,7 @@
                 Cookies.set("bvi-bgcolor", "black", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[black]':'Цвет сайта: Белым по черному'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Цвет сайта: Белым по черному", "Russian Female");
                 }
@@ -797,6 +849,7 @@
                 Cookies.set("bvi-bgcolor", "blue", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[blue]':'Цвет сайта: Темно-синим по голубому'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Цвет сайта: Темно-синим по голубому", "Russian Female");
                 }
@@ -808,6 +861,7 @@
                 Cookies.set("bvi-bgcolor", "brown", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[brown]':'Цвет сайта: Коричневым по бежевому'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Цвет сайта: Коричневым по бежевому", "Russian Female");
                 }
@@ -819,6 +873,7 @@
                 Cookies.set("bvi-bgcolor", "green", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[green]':'Цвет сайта: Зеленым по темно-коричневому'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Цвет сайта: Зеленым по темно-коричневому", "Russian Female");
                 }
@@ -830,6 +885,7 @@
                 Cookies.set("bvi-img", "1", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[1]':'Изображения включены'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Изображения включены", "Russian Female");
                 }
@@ -841,6 +897,7 @@
                 Cookies.set("bvi-img", "0", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[0]':'Изображения выключены'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Изображения выключены", "Russian Female");
                 }
@@ -852,6 +909,7 @@
                 Cookies.set("bvi-img", "grayScale", {
                     path: "/"
                 });
+                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[grayScale]':'Изображения черно-белые'});
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Изображения черно-белые", "Russian Female");
                 }
@@ -931,6 +989,22 @@
                 return false;
             });
 
+            $('#bvi-panel-hide').click(function () {
+                Cookies.set("bvi-panel-hide", "1", {
+                    path: "/"
+                });
+                BviPanelHide();
+                return false;
+            });
+
+            $('#bvi-panel-show').click(function () {
+                Cookies.set("bvi-panel-hide", "0", {
+                    path: "/"
+                });
+                BviPanelHide();
+                return false;
+            });
+
             $("#bvi-settings-default").click(function() {
                 Cookies.set("bvi-panel", setting.BviPanel, {
                     path: "/"
@@ -975,6 +1049,14 @@
                     path: "/"
                 });
 
+                Cookies.set("bvi-console-log)", setting.BviConsoleLog, {
+                    path: "/"
+                });
+
+                Cookies.set("bvi-panel-hide)", setting.BviPanelHide, {
+                    path: "/"
+                });
+
                 if (Cookies.get("bvi-voice") == '1') {
                     responsiveVoice.speak("Стандартные настройки", "Russian Female");
                 }
@@ -986,6 +1068,7 @@
                 BviImg();
                 BviVoice();
                 BviFlash();
+                BviPanelHide();
                 return false;
             });
 
@@ -997,12 +1080,13 @@
             BviImg();
             BviVoice();
             BviFlash();
+            BviPanelHide();
         },
         Active: function (setting) {
             var selector = $(this).selector;
             var setting = $.extend({
                 BviPanel: 1,
-                BviPanelActive: 1,
+                BviPanelActive: 0,
                 BviPanelBg: "white",
                 BviPanelFontFamily: "default",
                 BviPanelFontSize: "12",
@@ -1016,7 +1100,9 @@
                 BviCloseClassAndId: '',
                 BviFixPanel: 1,
                 BviPlay: 0,
-                BviFlash: 0
+                BviFlash: 0,
+                BviConsoleLog: 1,
+                BviPanelHide: 0
             }, setting);
 
             Cookies.set("bvi-selector", selector, {
@@ -1058,9 +1144,14 @@
             Cookies.set("bvi-flash", setting.BviFlash, {
                 path: "/"
             });
+            Cookies.set("bvi-flash", setting.BviConsoleLog, {
+                path: "/"
+            });
+            Cookies.set("bvi-panel-hide", setting.BviPanelHide, {
+                path: "/"
+            });
             method.Init(setting);
-            $('.bvi-panel-open-menu,'+selector).remove();
-            $('#bvi-close,#bvi-close').hide();
+            $('#bvi-close,.bvi-panel-open').hide();
         }
     };
 

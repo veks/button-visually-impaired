@@ -1,5 +1,5 @@
 /*!
- * Button visually impaired bvi.css v1.0.5
+ * Button visually impaired bvi.css v1.0.6
  */
 body {
   .bvi-body {
@@ -238,6 +238,9 @@ body {
     margin-right: auto;
     position: fixed;
     z-index: 999999;
+    .bvi-btn-panel-show {
+      opacity: 0.8;
+    }
   }
   .bvi-panel-menu * {
     -webkit-box-sizing: border-box;
@@ -254,7 +257,7 @@ body {
   .bvi-bg {
     color: #000000;
     background: rgb(248, 248, 248) !important;
-    padding: 4px;
+    padding: 0px;
     border: 1px solid #fcfcfc;
     moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
     webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.23);
@@ -295,6 +298,22 @@ body {
       }
     }
   }
+  .bvi-panel-show {
+    text-align: right;
+    .bvi-glyphicon {
+      font-size: 30px;
+    }
+    .bvi-btn-panel-show {
+      background: #F8F8F8 !important;
+      padding: 10px;
+      margin: 0px 15px 0px 15px;
+      color: black !important;
+      border: 1px solid #fcfcfc !important;
+      moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.23);
+      webkit-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.23);
+      box-shadow: 0 1px 3px 0 rgba(0,0,0,0.23);
+    }
+  }
   @import "btn.less";
 }
 @font-face {
@@ -332,6 +351,7 @@ body {
 .bvi-glyphicon-font                   { &:before { content: "\e047"; } }
 .bvi-glyphicon-adjust                 { &:before { content: "\e063"; } }
 .bvi-glyphicon-flash                  { &:before { content: "\e162"; } }
+.bvi-glyphicon-arrow-up               { &:before { content: "\e093"; } }
 
 .bvi-animated {
   -webkit-animation-duration: 1s;
@@ -410,4 +430,4 @@ body {
     transform: translate3d(0, -2000px, 0);
   }
 }
-.someclass:hover { background: #ff23b3; }
+
