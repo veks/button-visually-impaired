@@ -4,7 +4,7 @@
  * Plugin Name: Button visually impaired
  * Plugin URI: http://www.bvi.isvek.ru/
  * Description: Версия плагина для слабовидящих.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Vek
  * Author URI: http://www.bvi.isvek.ru/vek
  * License: GPL-2.0+
@@ -13,45 +13,49 @@
 
 class bvi_isvek
 {
+	/**
+	 * @var string
+	 */
     public $plugin_name = 'Button visually impaired';
-    public $ver = '1.0.6';
+
+	/**
+	 * @var string
+	 */
+    public $ver = '1.0.7';
+
+	/**
+	 * @var
+	 */
     public $get_option;
+
+    public $theme;
 
     public function __construct()
     {
-        $this->get_option = get_option('database_bvi');
+        $this->get_option = get_option('bvi_database');
 
         add_action('wp_ajax_settings_save', array($this, 'settings_save'), 10, 0);
         add_action('wp_ajax_settings_reset', array($this, 'settings_reset'), 10, 0);
+
         add_action('plugins_loaded', array(&$this, 'constants'), 10, 0);
-        add_action('plugins_loaded',array($this, 'bvi_init_language'), 10, 0);
         add_action('admin_menu', array(&$this, 'add_plugin_menu'), 10, 0);
 
-        if ($this->get_option['BviPanel'] == '1')
+        if ((bool) $this->get_option['bvi_active'] == true)
         {
-            add_action('wp_enqueue_scripts', array(&$this, 'scripts'), 10, 0);
+	        show_admin_bar(false);
+            add_action('wp_enqueue_scripts', array(&$this, 'scripts'), 9999, 0);
             add_shortcode('bvi', array(&$this, 'shortcode'), 10, 0);
-            add_filter('widget_text', 'do_shortcode');
         }
 
         register_activation_hook( __FILE__, array($this, 'activation_plugin'));
     }
 
-    public function bvi_init_language()
-    {
-        load_plugin_textdomain('bvi_language', false, dirname(plugin_basename( __FILE__ )) . '/language/');
-    }
-
-    public function bvi_language()
-    {
-        $language = array(
-            'get_locale' => get_locale(),
-            'language_text' => '1'
-        );
-
-        return $language;
-    }
-
+	/**
+	 * @param      $atts
+	 * @param null $content
+	 *
+	 * @return string
+	 */
     public function shortcode($atts, $content = null)
     {
         if (!empty($atts['text']))
@@ -65,161 +69,101 @@ class bvi_isvek
             $bvi_text = null;
         }
 
-        return '<div class="bvi-button"><a href="#" class="bvi-panel-open"><span class="bvi-glyphicon bvi-glyphicon-eye"></span>'.$bvi_text.'</a></div>';
+        return '<div class="bvi-button"><a href="#" class="bvi-open">'.$bvi_text.'</a></div>';
     }
 
+	/**
+	 *
+	 */
     public function constants()
     {
-        define('BVI_PLUGIN_DIR', plugin_dir_path(__FILE__));
-        define('BVI_PLUGIN_URL', plugin_dir_url(__FILE__));
-        define('BVI_PLUGIN_ADMIN', BVI_PLUGIN_DIR.'pages/');
-        define('BVI_PLUGIN_CSS', BVI_PLUGIN_URL.'assets/css/');
-        define('BVI_PLUGIN_JS', BVI_PLUGIN_URL.'assets/js/');
-        define('BVI_PLUGIN_IMG', BVI_PLUGIN_URL.'assets/img/');
+	    define('BVI_PLUGIN_DIR', plugin_dir_path(__FILE__));
+	    define('BVI_PLUGIN_URL', plugin_dir_url(__FILE__));
+	    define('BVI_PLUGIN_DIR_PAGES', BVI_PLUGIN_DIR . 'pages/');
+	    define('BVI_PLUGIN_URL_CSS', BVI_PLUGIN_URL . 'assets/css/');
+	    define('BVI_PLUGIN_URL_JS', BVI_PLUGIN_URL . 'assets/js/');
+	    define('BVI_PLUGIN_URL_IMG', BVI_PLUGIN_URL . 'assets/img/');
     }
 
+	/**
+	 *
+	 */
     public function admin_scripts()
     {
-        wp_register_script('bvi-bootstrap-notify', BVI_PLUGIN_JS.'bootstrap-notify.min.js', array('jquery'), '3.0.0', true);
+        wp_register_script('bvi-bootstrap-notify', BVI_PLUGIN_URL_JS . 'bootstrap-notify.min.js', array('jquery'), '3.0.0', true);
         wp_enqueue_script('bvi-bootstrap-notify');
 
-        wp_register_script('bvi-admin-js', BVI_PLUGIN_JS.'bvi-admin.min.js', array('jquery', 'wp-color-picker'), '0.1', true);
+        wp_register_script('bvi-bootstrap', BVI_PLUGIN_URL_JS . 'bootstrap.min.js', array('jquery'), '4.3.1', true);
+        wp_enqueue_script('bvi-bootstrap');
+
+        wp_register_script('bvi-admin-js', BVI_PLUGIN_URL_JS.'bvi-admin.min.js', array('jquery'), $this->ver, true);
         wp_localize_script('bvi-admin-js', 'bvi', array('ajaxurl'=> admin_url('admin-ajax.php')));
         wp_enqueue_script('bvi-admin-js');
 
         wp_enqueue_style( 'wp-color-picker' );
 
-        wp_register_style('bvi-bootstrap', BVI_PLUGIN_CSS.'bootstrap.min.css', '', $this->ver);
+        wp_register_style('bvi-bootstrap', BVI_PLUGIN_URL_CSS.'bootstrap.min.css', '', $this->ver);
         wp_enqueue_style('bvi-bootstrap');
 
-        wp_register_style('bvi-admin', BVI_PLUGIN_CSS.'bvi-admin.min.css', '', $this->ver);
+        wp_register_style('bvi-admin', BVI_PLUGIN_URL_CSS.'bvi-admin.min.css', '', $this->ver);
         wp_enqueue_style('bvi-admin');
     }
 
+	/**
+	 *
+	 */
     public function scripts()
     {
+        /*
+         * CSS
+         */
+        wp_register_style('bvi', BVI_PLUGIN_URL_CSS . 'bvi.min.css', '1.0.7', $this->ver);
+        wp_enqueue_style('bvi');
+
+        wp_register_style('bvi-ie-9', BVI_PLUGIN_URL_CSS . 'bootstrap-ie9.min.css', '4.2.1', $this->ver);
+        wp_style_add_data('bvi-ie-9', 'conditional', 'if lt IE 9');
+        wp_enqueue_style('bvi-ie-9');
+
+        wp_register_style('bvi-ie-8', BVI_PLUGIN_URL_CSS . 'bootstrap-ie8.min.css', '4.2.1', $this->ver);
+        wp_style_add_data('bvi-ie-8', 'conditional', 'if lt IE 8');
+        wp_enqueue_style('bvi-ie-8');
+
+        wp_register_style('bvi-fontawesome', BVI_PLUGIN_URL_CSS . 'all.min.css', '5.1.1', $this->ver);
+        wp_enqueue_style('bvi-fontawesome');
+        /*
+         * JS
+         */
         wp_enqueue_script('jquery');
 
-        wp_register_script('responsivevoice', BVI_PLUGIN_JS.'responsivevoice.min.js', array('jquery'), '1.5.3', $this->no_work());
-        wp_enqueue_script('responsivevoice');
+        wp_register_script('bvi-responsivevoice-js', BVI_PLUGIN_URL_JS . 'responsivevoice.min.js', array('jquery'), '1.5.12', $this->no_work());
+        wp_enqueue_script('bvi-responsivevoice-js');
 
-        wp_register_script('bvi-panel', BVI_PLUGIN_JS.'bvi-init-panel.min.js', array('jquery'),'0.1', $this->no_work());
-        wp_localize_script('bvi-panel', 'bvi', array(
-        	'bvi_setting'=> array(
-                'BviPanel'              => $this->get_option['BviPanel'],
-                'BviPanelBg'            => $this->get_option['BviPanelBg'],
-                'BviPanelFontSize'      => $this->get_option['BviPanelFontSize'],
-                'BviPanelLetterSpacing' => $this->get_option['BviPanelLetterSpacing'],
-                'BviPanelLineHeight'    => $this->get_option['BviPanelLineHeight'],
-                'BviPanelImg'           => $this->get_option['BviPanelImg'],
-                'BviPanelImgXY'         => $this->get_option['BviPanelImgXY'],
-                'BviPanelReload'        => $this->get_option['BviPanelReload'],
-                'BviPanelText'          => $this->get_option['BviPanelText'],
-                'BviPanelCloseText'     => $this->get_option['BviPanelCloseText'],
-                'BviCloseClassAndId'    => $this->get_option['BviCloseClassAndId'],
-                'BviFixPanel'           => $this->get_option['BviFixPanel'],
-                'BviPlay'               => $this->get_option['BviPlay'],
-                'BviPanelActive'        => $this->get_option['BviPanelActive']
-            ),
-            'bvi_language' => array(
-                $this->bvi_language()
-            )
-        ));
-        wp_enqueue_script('bvi-panel');
-
-        wp_register_script('bvi-js', BVI_PLUGIN_JS.'bvi.min.js', array('jquery'), $this->ver, $this->no_work());
-        wp_enqueue_script('bvi-js');
-
-        wp_register_script('bvi-cookie', BVI_PLUGIN_JS.'js.cookie.min.js', array('jquery'),'2.1.3', $this->no_work());
+        wp_register_script('bvi-cookie', BVI_PLUGIN_URL_JS . 'js.cookie.min.js', array('jquery'), '2.2.0', $this->no_work());
         wp_enqueue_script('bvi-cookie');
 
-	    wp_register_style('bvi-default', BVI_PLUGIN_CSS.'bvi.min.css', '', $this->ver);
-	    wp_enqueue_style('bvi-default');
+        wp_register_script('bvi-init', BVI_PLUGIN_URL_JS . 'bvi-init.js', array('jquery'), $this->ver, $this->no_work());
+        wp_localize_script('bvi-init', 'bvi_init', array('bvi_init_setting' => array(
+            'bvi_theme'          => $this->get_option['bvi_theme'],
+            'bvi_font'           => $this->get_option['bvi_font'],
+            'bvi_font_size'      => (int) $this->get_option['bvi_font_size'],
+            'bvi_letter_spacing' => $this->get_option['bvi_letter_spacing'],
+            'bvi_line_height'    => $this->get_option['bvi_line_height'],
+            'bvi_images'         => $this->get_option['bvi_images'],
+            'bvi_reload'         => $this->get_option['bvi_reload'],
+            'bvi_fixed'          => $this->get_option['bvi_fixed'],
+            'bvi_voice'          => $this->get_option['bvi_voice'],
+            'bvi_flash_iframe'   => $this->get_option['bvi_flash_iframe'],
+            'bvi_hide'           => $this->get_option['bvi_hide']
+        )));
+        wp_enqueue_script('bvi-init');
 
-	    $BviTextBg = $this->get_option['BviTextBg'];
-	    $BviTextColor = $this->get_option['BviTextColor'];
-	    $BviSizeText = $this->get_option['BviSizeText'];
-	    $BviSizeIcon = $this->get_option['BviSizeIcon'];
-	    $custom_css = "
-        .bvi-button .bvi-panel-open {
-            color: {$BviTextColor} !important;
-        }
-		.bvi-button a {
-			background-color: {$BviTextBg};
-			color: {$BviTextColor};
-			border: 1px solid {$this->color($BviTextBg,-0.8)};
-			border-radius: 2px;
-			padding: 5px 10px;
-			display: inline-block;
-			font-size: {$BviSizeText}px;
-			text-decoration: none;
-			font-weight: 500;
-			vertical-align: middle;
-		}
-		.bvi-button a:link {
-		    color: {$BviTextColor};
-		    text-decoration: none;
-		}
-		.bvi-button a:visited {
-		    color: {$BviTextColor};
-		    text-decoration: none;
-		}
-		.bvi-button a:hover {
-			color: {$BviTextColor};
-		    text-decoration: none;
-		}
-		.bvi-button a:active {
-			color: {$BviTextColor};
-		    text-decoration: none;
-		}
-		.bvi-glyphicon-eye {
-		    font-size: {$BviSizeIcon}px;
-		}
-		";
-
-	    wp_add_inline_style('bvi-default', $custom_css);
+        wp_register_script('bvi-js', BVI_PLUGIN_URL_JS . 'bvi.min.js', array('jquery'), $this->ver, $this->no_work());
+        wp_enqueue_script('bvi-js');
     }
 
-    private function color($hex, $percent) {
-        // Work out if hash given
-        $hash = '';
-        if (stristr($hex,'#')) {
-            $hex = str_replace('#','',$hex);
-            $hash = '#';
-        }
-        /// HEX TO RGB
-        $rgb = array(hexdec(substr($hex,0,2)), hexdec(substr($hex,2,2)), hexdec(substr($hex,4,2)));
-        //// CALCULATE
-        for ($i=0; $i<3; $i++) {
-            // See if brighter or darker
-            if ($percent > 0) {
-                // Lighter
-                $rgb[$i] = round($rgb[$i] * $percent) + round(255 * (1-$percent));
-            } else {
-                // Darker
-                $positivePercent = $percent - ($percent*2);
-                $rgb[$i] = round($rgb[$i] * $positivePercent) + round(0 * (1-$positivePercent));
-            }
-            // In case rounding up causes us to go to 256
-            if ($rgb[$i] > 255) {
-                $rgb[$i] = 255;
-            }
-        }
-        //// RBG to Hex
-        $hex = '';
-        for($i=0; $i < 3; $i++) {
-            // Convert the decimal digit to hex
-            $hexDigit = dechex($rgb[$i]);
-            // Add a leading zero if necessary
-            if(strlen($hexDigit) == 1) {
-                $hexDigit = "0" . $hexDigit;
-            }
-            // Append to the hex string
-            $hex .= $hexDigit;
-        }
-        return $hash.$hex;
-    }
-
+	/**
+	 *
+	 */
     public function add_plugin_menu()
     {
         if (function_exists('add_menu_page')){
@@ -238,6 +182,9 @@ class bvi_isvek
         }
     }
 
+	/**
+	 *
+	 */
     public function plugin_menu_help_tab()
     {
         global $admin_menu;
@@ -247,19 +194,23 @@ class bvi_isvek
 
         $screen->add_help_tab(array(
                 'id' => 'contact_help_tab2',
-                'title' => __('Документация', 'bvi_language'),
-                'content' => '<p>'.__('Дополнительная информация находится по адресу', 'bvi_language').'<a href="http://bvi.isvek.ru/pages/install" target="_blank">http://bvi.isvek.ru/pages/install</a></p>'
+                'title' => 'Дополнительная информация',
+                'content' => '<p>Дополнительная информация находится по адресу <a href="http://bvi.isvek.ru/" target="_blank">http://bvi.isvek.ru/</a></p>'
             ));
+
         $screen->add_help_tab(array(
             'id'  => 'contact_help_tab1',
-            'title' => __('Контакты', 'bvi_language'),
-            'content' => '<p>'.__('По всем вопросам пишите на почту', 'bvi_language').'<a href="mailto:oleg@isvek.ru" title="oleg@isvek.ru">oleg@isvek.ru</a> '.__('или воспользуйтесь', 'bvi_language').' <a href="http://bvi.isvek.ru/pages/contact" target="_blank">'.__('формой обратной связи', 'bvi_language').'</a></p>'
+            'title' => 'Контакты',
+            'content' => '<p>По всем вопросам пишите на почту <a href="mailto:bvi@isvek.ru" title="bvi@isvek.ru">bvi@isvek.ru</a> или воспользуйтесь <a href="http://bvi.isvek.ru/feedback" target="_blank">формой обратной связи</a></p>'
         ));
     }
 
+	/**
+	 * @return bool
+	 */
     public function no_work()
     {
-        if ($this->get_option['BviPanelNoWork'] == 0)
+        if ($this->get_option['bvi_not_work'] == false)
         {
             return TRUE;
         }
@@ -269,22 +220,35 @@ class bvi_isvek
         }
     }
 
+	/**
+	 *
+	 */
     public function activation_plugin()
     {
         if (current_user_can('administrator'))
         {
-            $db = self::settings_default();
-            add_option('database_bvi', $db);
+            if (get_option('database_bvi') !== false)
+            {
+                delete_option('database_bvi');
+            }
+            else
+            {
+                $db = self::settings_default();
+                add_option('bvi_database', $db);
+            }
         }
     }
 
+	/**
+	 *
+	 */
     public function settings_page()
     {
         if (current_user_can('administrator'))
         {
-            if(file_exists(BVI_PLUGIN_ADMIN.'admin.php'))
+            if(file_exists(BVI_PLUGIN_DIR_PAGES . 'admin.php'))
             {
-                require_once (BVI_PLUGIN_ADMIN.'admin.php');
+                require_once (BVI_PLUGIN_DIR_PAGES . 'admin.php');
             }
             else
             {
@@ -293,134 +257,158 @@ class bvi_isvek
         }
     }
 
+	/**
+	 *
+	 */
     public function settings_save()
     {
         if (current_user_can('administrator'))
         {
             if (!empty($_POST) && check_admin_referer('settings_save', 'settings_save'))
             {
-                $param  = array(
-                    'BviPanel'                 => esc_attr($_POST['BviPanel']),
-                    'BviPanelBg'               => esc_attr($_POST['BviPanelBg']),
-                    'BviPanelFontSize'         => esc_attr($_POST['BviPanelFontSize']),
-                    'BviPanelLetterSpacing'    => esc_attr($_POST['BviPanelLetterSpacing']),
-                    'BviPanelLineHeight'       => esc_attr($_POST['BviPanelLineHeight']),
-                    'BviPanelImg'              => esc_attr($_POST['BviPanelImg']),
-                    'BviPanelImgXY'            => esc_attr($_POST['BviPanelImgXY']),
-                    'BviPanelReload'           => esc_attr($_POST['BviPanelReload']),
-                    'BviPanelNoWork'           => esc_attr($_POST['BviPanelNoWork']),
-                    'BviPanelText'             => esc_attr($_POST['BviPanelText']),
-                    'BviPanelCloseText'        => esc_attr($_POST['BviPanelCloseText']),
-                    'BviFixPanel'              => esc_attr(isset($_POST['BviFixPanel'])? 1 : 0),
-                    'BviTextBg'                => esc_attr($_POST['BviTextBg']),
-                    'BviTextColor'             => esc_attr($_POST['BviTextColor']),
-                    'BviSizeText'              => esc_attr($_POST['BviSizeText']),
-                    'BviSizeIcon'              => esc_attr($_POST['BviSizeIcon']),
-                    'BviPlay'                  => esc_attr($_POST['BviPlay']),
-                    'BviPanelActive'           => esc_attr($_POST['BviPanelActive'])
-                );
-
-                preg_match_all('/([\^.|#])+([a-zA-Z-0-9])+([\^,:space:])/', esc_attr($_POST['BviCloseClassAndId']), $matches, PREG_SET_ORDER, 0);
-
-                foreach ($matches as $v)
+                if (get_option('bvi_database') !== false)
                 {
-                    $param['BviCloseClassAndId'] .= $v[0];
-                }
+                    $param  = array(
+                        'bvi_active'         => esc_attr($_POST['bvi_active']),
+                        'bvi_not_work'       => esc_attr($_POST['bvi_not_work']),
+                        'bvi_theme'          => esc_attr($_POST['bvi_theme']),
+                        'bvi_font'           => esc_attr($_POST['bvi_font']),
+                        'bvi_font_size'      => esc_attr($_POST['bvi_font_size']),
+                        'bvi_letter_spacing' => esc_attr($_POST['bvi_letter_spacing']),
+                        'bvi_line_height'    => esc_attr($_POST['bvi_line_height']),
+                        'bvi_images'         => esc_attr($_POST['bvi_images']),
+                        'bvi_reload'         => esc_attr($_POST['bvi_reload']),
+                        'bvi_voice'          => esc_attr($_POST['bvi_voice']),
+                        'bvi_flash_iframe'   => esc_attr($_POST['bvi_flash_iframe']),
+                        'bvi_hide'           => esc_attr($_POST['bvi_hide']),
+                        'bvi_fixed'          => esc_attr($_POST['bvi_fixed'])
+                    );
 
-                $result = $this->wp_error_form($param);
+                    $result = $this->wp_error_form($param);
 
-                if (is_wp_error($result))
-                {
-                    wp_send_json(array("msg" => $result->get_error_messages(), "type" => "danger"));
-                }
-                else
-                {
-                    if (get_option('database_bvi') !== false)
+                    if (is_wp_error($result))
                     {
-                        update_option('database_bvi', $param);
-
-                        wp_send_json(array("msg" => __("Настройки сохранены", "bvi_language"), "type" => "success"));
+                        wp_send_json(array("msg" => $result->get_error_messages(), "type" => "danger"));
                     }
                     else
                     {
-                        wp_send_json(array("msg" => __("Ошибка базы данных", "bvi_language"), "type" => "danger"));
+                        if (get_option('bvi_database') !== false)
+                        {
+                            if ($_POST['bvi_images'] === 'grayscale')
+                            {
+                                $bvi_image = 'grayscale';
+                            }
+                            else
+                            {
+                                $bvi_image = filter_var(esc_attr($_POST['bvi_images']), FILTER_VALIDATE_BOOLEAN);
+                            }
+                            $params  = array(
+                                'bvi_active'         => filter_var(esc_attr($_POST['bvi_active']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_not_work'       => filter_var(esc_attr($_POST['bvi_not_work']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_theme'          => (string) esc_attr($_POST['bvi_theme']),
+                                'bvi_font'           => (string) esc_attr($_POST['bvi_font']),
+                                'bvi_font_size'      => (int) esc_attr($_POST['bvi_font_size']),
+                                'bvi_letter_spacing' => (string) esc_attr($_POST['bvi_letter_spacing']),
+                                'bvi_line_height'    => (string) esc_attr($_POST['bvi_line_height']),
+                                'bvi_images'         => $bvi_image,
+                                'bvi_reload'         => filter_var(esc_attr($_POST['bvi_reload']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_voice'          => filter_var(esc_attr($_POST['bvi_voice']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_flash_iframe'   => filter_var(esc_attr($_POST['bvi_flash_iframe']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_hide'           => filter_var(esc_attr($_POST['bvi_hide']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_fixed'          => filter_var(esc_attr($_POST['bvi_fixed']), FILTER_VALIDATE_BOOLEAN)
+                            );
+
+                            update_option('bvi_database', $params, true);
+
+                            wp_send_json(array("msg" => "Настройки сохранены", "type" => "success"));
+                        }
+                        else
+                        {
+                            wp_send_json(array("msg" => "Ошибка базы данных", "type" => "danger"));
+                        }
                     }
+                }
+                else
+                {
+                    $db = self::settings_default();
+                    add_option('bvi_database', $db);
+                    wp_send_json(array("msg" => "Обновление базы данных", "type" => "info"));
                 }
             }
         }
         else
         {
-            wp_send_json(array("msg" => __("Ошибка доступа", "bvi_language"), "type" => "danger"));
+            wp_send_json(array("msg" => "Ошибка доступа", "type" => "danger"));
         }
     }
 
+	/**
+	 * @param $param
+	 *
+	 * @return WP_Error
+	 */
     public function wp_error_form($param)
     {
         $errors = new WP_Error();
 
-        if ($param['BviPanel'] != '0' && $param['BviPanel'] != '1')
+        if ($param['bvi_active'] != false && $param['bvi_active'] != true)
         {
-            $errors->add('BviPanelActive', "Неправильное значение <code>{$param['BviPanel']}</code> для поля 'Включить плагин?'");
+            $errors->add('bvi_active', "Неправильное значение <code>{$param['bvi_active']}</code> для поля 'Включить плагин?'");
         }
 
-        if ($param['BviPanelActive'] != '0' && $param['BviPanelActive'] != '1')
+        if ((string)$param['bvi_theme'] != 'white' && (string)$param['bvi_theme'] != 'black' && (string)$param['bvi_theme'] != 'blue' && (string)$param['bvi_theme'] != 'brown' && $param['bvi_theme'] != (string)'green')
         {
-            $errors->add('BviPanelActive', "Неправильное значение <code>{$param['BviPanelActive']}</code> для поля 'Авто старт панели'");
+            $errors->add('bvi_theme', "Неправильное значение <code>{$param['bvi_theme']}</code> для поля 'Цвета сайта'");
         }
 
-        if ($param['BviPanelBg'] != 'white' && $param['BviPanelBg'] != 'black' && $param['BviPanelBg'] != 'blue' && $param['BviPanelBg'] != 'brown' && $param['BviPanelBg'] != 'green')
+        if (!preg_match("/^[0-4]?[0-9]$/", (int)$param['bvi_font_size']))
         {
-            $errors->add( 'BviPanelBg', "Неправильное значение <code>{$param['BviPanelBg']}</code> для поля 'Цвета сайта'");
+            $errors->add('bvi_font_size', "Неправильное значение <code>'{$param['bvi_font_size']}'</code> для поля 'Размер шрифта'");
         }
 
-        if (!preg_match("/^[0-4]?[0-9]$/", $param['BviPanelFontSize']))
+        if ((string)$param['bvi_font'] != 'arial' && (string)$param['bvi_font'] != 'times')
         {
-            $errors->add('BviPanelFontSize', "Неправильное значение <code>'{$param['BviPanelFontSize']}'</code> для поля 'Размер шрифта'");
+            $errors->add('bvi_font', "Неправильное значение <code>{$param['bvi_font']}</code> для поля 'Шрифт'");
         }
 
-        if ($param['BviPanelLetterSpacing'] != 'normal' && $param['BviPanelLetterSpacing'] != 'average' && $param['BviPanelLetterSpacing'] != 'big')
+        if ((string)$param['bvi_letter_spacing'] != 'normal' && (string)$param['bvi_letter_spacing'] != 'average' && (string)$param['bvi_letter_spacing'] != 'big')
         {
-            $errors->add('BviPanelLetterSpacing', "Неправильное значение <code>{$param['BviPanelLetterSpacing']}</code> для поля 'Интервал между буквами'");
+            $errors->add('bvi_letter_spacing', "Неправильное значение <code>{$param['bvi_letter_spacing']}</code> для поля 'Межбуквенный интервал'");
         }
 
-        if ($param['BviPanelLineHeight'] != 'normal' && $param['BviPanelLineHeight'] != 'average' && $param['BviPanelLineHeight'] != 'big')
+        if ((string)$param['bvi_line_height'] != 'normal' && (string)$param['bvi_line_height'] != 'average' && (string)$param['bvi_line_height'] != 'big')
         {
-            $errors->add('BviPanelLineHeight', "Неправильное значение <code>{$param['BviPanelLineHeight']}</code> для поля 'Интервал между строками'");
+            $errors->add('bvi_line_height', "Неправильное значение <code>{$param['bvi_line_height']}</code> для поля 'Междустрочный интервал'");
         }
 
-        if ($param['BviPanelImg'] != 'grayScale' && $param['BviPanelImg'] != '1' && $param['BviPanelImg'] != '0')
+        if((string)$param['bvi_images'] != 'grayscale' && $param['bvi_images'] != true && $param['bvi_images'] != false)
         {
-            $errors->add('BviPanelImg', "Неправильное значение <code>{$param['BviPanelImg']}</code> для поля 'Изображения'");
+            $errors->add('bvi_images', "Неправильное значение <code>{$param['bvi_images']}</code> для поля 'Изображения'");
         }
 
-        if ($param['BviPanelImgXY'] != '1' && $param['BviPanelImgXY'] != '0')
+        if ($param['bvi_fixed'] != true && $param['bvi_fixed'] != false)
         {
-            $errors->add('BviPanelImgXY', "Неправильное значение <code>{$param['BviPanelImgXY']}</code> для поля 'Сохранение размера исходного изображения'");
+            $errors->add('bvi_fixed', "Неправильное значение <code>{$param['bvi_fixed']}</code> для поля 'Зафиксировать панель настроек вверху страницы'");
         }
 
-        if ($param['BviPanelReload'] != '1' && $param['BviPanelReload'] != '0')
+        if ($param['bvi_reload'] != true && $param['bvi_reload'] != false)
         {
-            $errors->add('BviPanelReload', "Неправильное значение <code>{$param['BviPanelReload']}</code> для поля 'Перезагрузка страницы'");
+            $errors->add('bvi_reload', "Неправильное значение <code>{$param['bvi_reload']}</code> для поля 'Перезагрузка страницы'");
         }
 
-        if (strlen($param['BviPanelText']) > '100')
+        if ($param['bvi_flash_iframe'] != true && $param['bvi_flash_iframe'] != false)
         {
-            $errors->add('BviPanelText', "Неправильное значение <code>{$param['BviPanelText']}</code> для поля 'Название сыллки' количество символом ограниченно");
+            $errors->add('bvi_flash_iframe', "Неправильное значение <code>{$param['bvi_flash_iframe']}</code> для поля 'iframe'");
         }
 
-        if (strlen($param['BviPanelCloseText']) > '100')
+        if ($param['bvi_hide'] != true && $param['bvi_hide'] != false)
         {
-            $errors->add('BviPanelCloseText', "Неправильное значение <code>{$param['BviPanelCloseText']}</code> для поля 'Название сыллки' количество символом ограниченно");
+            $errors->add('bvi_hide', "Неправильное значение <code>{$param['bvi_hide']}</code> для поля 'Скрыть панель для славбовидящих'");
         }
 
-        if (!preg_match("/^[0-4]?[0-9]$/", $param['BviSizeIcon']))
+        if ($param['bvi_voice'] != true && $param['bvi_voice'] != false)
         {
-            $errors->add('BviSizeIcon', "Неправильное значение <code>{$param['BviSizeIcon']}</code> для поля 'Размер иконки'");
-        }
-
-        if (!preg_match("/^[0-4]?[0-9]$/", $param['BviSizeText']))
-        {
-            $errors->add('BviSizeText', "Неправильное значение <code>{$param['BviSizeText']}</code> для поля 'Размер шрифта кнопки'");
+            $errors->add('bvi_voice', "Неправильное значение <code>{$param['bvi_voice']}</code> для поля 'Синтез речи'");
         }
 
         $err = $errors->get_error_codes();
@@ -431,14 +419,17 @@ class bvi_isvek
         }
     }
 
+	/**
+	 *
+	 */
     public function settings_reset()
     {
         if (current_user_can('administrator'))
         {
             if (!empty($_POST) && check_admin_referer('settings_reset', 'settings_reset'))
             {
-                update_option('database_bvi', $this->settings_default());
-                wp_send_json(array("msg" => __("Настройки сброшены", "bvi_language"), "type" => "info"));
+                update_option('bvi_database', $this->settings_default(), true);
+                wp_send_json(array("msg" =>"Настройки сброшены", "type" => "info"));
             }
         }
         else
@@ -447,42 +438,44 @@ class bvi_isvek
         }
     }
 
+	/**
+	 * @return array
+	 */
     public function settings_default()
     {
         $SettingsDefaultDataBase = array(
-            'BviPanel'                      => 0,
-            'BviPanelBg'                    => 'white',
-            'BviPanelFontSize'              => '12',
-            'BviPanelLetterSpacing'         => 'normal',
-            'BviPanelLineHeight'            => 'normal',
-            'BviPanelImg'                   => 1,
-            'BviPanelImgXY'                 => 1,
-            'BviPanelReload'                => 0,
-            'BviPanelNoWork'                => 0,
-            'BviPanelText'                  => __('Версия для слабовидящих', 'bvi_language'),
-            'BviPanelCloseText'             => __('Обычная версия сайта', 'bvi_language'),
-            'BviFixPanel'                   => 1,
-            'ver'                           => 'Button visually impaired version '.$this->ver,
-            'BviCloseClassAndId'            => '.hide-screen-fixed',
-            'BviTextBg'                     => '#e53935',
-            'BviTextColor'                  => '#ffffff',
-            'BviSizeText'                   => '14',
-            'BviSizeIcon'                   => '20',
-            'BviPlay'                       => 1,
-            'BviPanelActive'                => 0
+            'bvi_active'         => false,
+            'bvi_not_work'       => false,
+            'bvi_theme'          => 'white',
+            'bvi_font'           => 'arial',
+            'bvi_font_size'      =>  16,
+            'bvi_letter_spacing' => 'normal',
+            'bvi_line_height'    => 'normal',
+            'bvi_images'         => true,
+            'bvi_reload'         => false,
+            'bvi_voice'          => true,
+            'bvi_flash_iframe'   => true,
+            'bvi_hide'           => false,
+            'bvi_fixed'          => true
         );
         return $SettingsDefaultDataBase;
+    }
+
+    function check_active($active, $param)
+    {
+        if ($active === $param)
+        {
+            echo 'active';
+        }
     }
 }
 $Bvi = new bvi_isvek();
 
-
 class Bvi_Widget extends WP_Widget
 {
-    function Bvi_Widget()
+    function __construct()
     {
-        parent::__construct(false, __('Версия для слабовидящих', 'bvi_language'));
-        add_action( 'load-widgets.php', array(&$this, 'load_widgets'));
+        parent::__construct('Bvi_Widget', 'Версия для слабовидящих');
     }
 
     function widget($args, $instance)
@@ -499,58 +492,33 @@ class Bvi_Widget extends WP_Widget
 
     function update($new_instance, $old_instance)
     {
-        $db = get_option('database_bvi');
-
         $instance = $old_instance;
         $instance = $new_instance;
         $instance['title'] = (!empty( $new_instance['title'])) ? strip_tags($new_instance['title']) : '';
-        $instance['BviTextBg'] = $new_instance['BviTextBg'];
-        $instance['BviTextColor'] = $new_instance['BviTextColor'];
-        $db['BviTextBg'] = $instance['BviTextBg'];
-        $db['BviTextColor'] = $instance['BviTextColor'];
-        update_option('database_bvi',$db);
         return $instance;
     }
 
     function form($instance)
     {
-        $db = get_option('database_bvi');
-        $title = !empty($instance['title']) ? $instance['title'] : __('Версия для слабовидящих', 'bvi_language');
-        echo '<p><input class="widefat" id="'.$this->get_field_id( "title" ).'" name="'.$this->get_field_name("title").'" type="text" value="'.esc_attr( $title ).'"></p>';
-        echo'<b>'.__('Фон кнопки', 'bvi_language').'</b><br><input id="BviTextBg" type="text" name="'.$this->get_field_name('BviTextBg').'" value="'. $db['BviTextBg'].'" class="color-picker"/><br><b>'.__('Цвет текста кнопки иконки', 'bvi_language').'</b><br><input id="BviTextColor" type="text" name="'.$this->get_field_name('BviTextColor').'" value="'.$db['BviTextColor'].'" class="color-picker" />';
-    }
-
-    function load_widgets()
-    {
-        wp_enqueue_style('wp-color-picker');
-        wp_enqueue_script('wp-color-picker');
-        wp_register_script('bvi-widget', BVI_PLUGIN_JS.'widget.js', array('jquery'), '3.0.0', true);
-        wp_enqueue_script('bvi-widget');
+        $title = !empty($instance['title']) ? $instance['title'] : 'Версия для слабовидящих';
+        echo '<p><input class="widefat" id="'.$this->get_field_id("title").'" name="'.$this->get_field_name("title").'" type="text" value="'.esc_attr($title).'"></p>';
     }
 
     public function template_button()
     {
-        $template_button = get_option('database_bvi');
-
-        if(!empty($template_button))
-        {
-            $text = $template_button['BviPanelText'];
-        }
-        else
-        {
-            $text = FALSE;
-        }
-
-        return '<div class="bvi-button" style="text-align: center;"><a href="#" class="bvi-panel-open" style="width: 100%"><span class="bvi-glyphicon bvi-glyphicon-eye"></span> '.$text.'</a></div>';
+        return '<div><a href="#" class="bvi-open">Версия сайта для слабовидящих</a></div>';
     }
 }
-$BviPanel = get_option('database_bvi');
-if ($BviPanel['BviPanel'] == '1')
+$BviPanel = get_option('bvi_database');
+
+if ($BviPanel['bvi_active'] === true)
 {
     function register_foo_widget()
     {
         register_widget( 'Bvi_Widget' );
     }
 
-    add_action( 'widgets_init', 'register_foo_widget' );
+    add_action('widgets_init', 'register_foo_widget');
 }
+
+

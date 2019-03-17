@@ -1,5 +1,5 @@
 /*!
- * Button visually impaired v1.0.5
+ * Button visually impaired v1.0.7
  */
 jQuery(document).ready(function($){
     $("#bvi_settings_save").submit(function(e){
@@ -30,10 +30,13 @@ jQuery(document).ready(function($){
                             enter: 'animated fadeIn',
                             exit: 'animated flipOutX'
                         },
-                        template: '<div data-notify="container" class="col-xs-2 alert alert-{0}" role="alert" style="text-align: center">' +
+                        template: '<div data-notify="container" class="col-5 alert alert-{0}" role="alert" style="text-align: center">' +
                         '<span data-notify="message">{2}</span>' +
                         '</div>'
                     });
+                setTimeout(function() {
+                    document.location.reload(true);
+                },1500);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status);
@@ -70,7 +73,7 @@ jQuery(document).ready(function($){
                             enter: 'animated fadeIn',
                             exit: 'animated flipOutX'
                         },
-                        template: '<div data-notify="container" class="col-xs-2 alert alert-{0}" role="alert" style="text-align: center">' +
+                        template: '<div data-notify="container" class="col-5 alert alert-{0}" role="alert" style="text-align: center">' +
                         '<span data-notify="message">{2}</span>' +
                         '</div>'
                     });
@@ -85,6 +88,4 @@ jQuery(document).ready(function($){
         });
         return false;
     });
-    $( '.bvi-color-picker-BviTextBg' ).wpColorPicker({defaultColor:'#e53935'});
-    $( '.bvi-color-picker-BviTextColor' ).wpColorPicker({defaultColor:'#ffffff'});
 });

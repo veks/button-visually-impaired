@@ -1,241 +1,233 @@
+<?php
+//echo '<pre>' . print_r($this->get_option, 1) . '</pre>';
+?>
 <div class="wrap" id="wrap">
-    <h1><?php echo _e('Плагин', 'bvi_language'); ?> <?php echo $this->plugin_name; ?> <sup><font style="font-size: 14px;">v<?php echo $this->ver; ?></font></sup></h1>
+    <h1>Плагин <?php echo $this->plugin_name; ?> <sup><font style="font-size: 14px;">v<?php echo $this->ver; ?></font></sup></h1>
     <div class="bvi-text-center">
-        <a href="http://bvi.isvek.ru/donate" target="_blank" class="bvi-link" title="<?php echo _e('Помочь развитию проекта', 'bvi_language'); ?>"><?php echo _e('Помочь развитию проекта', 'bvi_language'); ?></a>
+        <a href="http://bvi.isvek.ru/donate" target="_blank" class="bvi-link" title="Помочь развитию проекта">Помочь развитию проекта</a>
     </div>
-    <h2 class="title"><?php echo _e('Основные настройки', 'bvi_language'); ?></h2>
-    <p><?php echo _e('Настройки панели слабовидящих', 'bvi_language'); ?></p>
-    <form id="bvi_settings_save">
-        <table class="form-table">
-            <tbody>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanel"><?php echo _e('Включить плагин?',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanel" id="BviPanel" class="postform">
-                        <option class="level-0" value="1" <?php selected( $this->get_option['BviPanel'], '1' ); ?>><?php echo _e('Включить', 'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanel'], '0' ); ?>><?php echo _e('Выключить', 'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelActive"><?php echo _e('Автостарт панели',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelActive" id="BviPanelActive" class="postform">
-                        <option class="level-0" value="1" <?php selected( $this->get_option['BviPanelActive'], '1' ); ?>><?php echo _e('Включить', 'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanelActive'], '0' ); ?>><?php echo _e('Выключить', 'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelBg"><?php echo _e('Цвета сайта', 'bvi_language'); ?>:</label>
-                </th>
-                <td>
-                    <select name="BviPanelBg" id="BviPanelBg" class="postform">
-                        <option class="level-0" value="white" <?php selected( $this->get_option['BviPanelBg'], 'white' ); ?>><?php echo _e('Белым по черному', 'bvi_language'); ?></option>
-                        <option class="level-0" value="black" <?php selected( $this->get_option['BviPanelBg'], 'black' ); ?>><?php echo _e('Черным по белому', 'bvi_language'); ?></option>
-                        <option class="level-0" value="blue"  <?php selected( $this->get_option['BviPanelBg'], 'blue' ); ?>><?php echo _e('Темно-синим по голубому', 'bvi_language'); ?></option>
-                        <option class="level-0" value="brown" <?php selected( $this->get_option['BviPanelBg'], 'brown' ); ?>><?php echo _e('Коричневым по бежевому', 'bvi_language'); ?></option>
-                        <option class="level-0" value="green" <?php selected( $this->get_option['BviPanelBg'], 'green' ); ?>><?php echo _e('Зеленым по темно-коричневому', 'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelFontSize"><?php echo _e('Размер шрифта', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelFontSize" id="BviPanelFontSize" class="postform">
+    <h3 class="title">Основные настройки</h3>
+    <p>Настройки панели при включении версии сайта для слабовидящих.</p>
+    <form id="bvi_settings_save" class="form-horizontal" style="background: white; padding: 15px;">
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_active" class="font-weight-bold">Включить плагин?</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_active'], true); ?>">
+                        <input type="radio" name="bvi_active" value="true" id="bvi_active" autocomplete="off" <?php checked(true, $this->get_option['bvi_active']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_active'], false); ?>">
+                        <input type="radio" name="bvi_active" value="false" id="bvi_active" autocomplete="off" <?php checked(false, $this->get_option['bvi_active']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_theme" class="font-weight-bold">Цвета сайта</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_theme'], 'white'); ?>">
+                        <input type="radio" name="bvi_theme" value="white" id="bvi_theme" autocomplete="off" <?php checked('white', $this->get_option['bvi_theme']); ?>> Белым по черному
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_theme'], 'black'); ?>">
+                        <input type="radio" name="bvi_theme" value="black" id="bvi_theme" autocomplete="off" <?php checked('black', $this->get_option['bvi_theme']); ?>> Черным по белому
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_theme'], 'blue'); ?>">
+                        <input type="radio" name="bvi_theme" value="blue" id="bvi_theme" autocomplete="off" <?php checked('blue', $this->get_option['bvi_theme']); ?>> Темно-синим по голубому
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_theme'], 'brown'); ?>">
+                        <input type="radio" name="bvi_theme" value="brown" id="bvi_theme" autocomplete="off" <?php checked('brown', $this->get_option['bvi_theme']); ?>> Коричневым по бежевому
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_theme'], 'green'); ?>">
+                        <input type="radio" name="bvi_theme" value="green" id="bvi_theme" autocomplete="off" <?php checked('green', $this->get_option['bvi_theme']); ?>> Зеленым по темно-коричневому
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_font_size" class="font-weight-bold">Размер шрифта</label>
+            </div>
+            <div class="col-sm-3">
+                <select name="bvi_font_size" id="bvi_font_size" class="form-control">
                     <?php
-                    for ($i = 1;$i <= 49; $i++ )
+                    for ($i = 1;$i <= 40; $i++ )
                     {
-                        echo '<option class="level-0" value="'.$i.'"  '.selected( $this->get_option['BviPanelFontSize'], $i ).' >'.$i.' pt</option>';
+                        echo '<option value="' . $i . '"' . selected($this->get_option['bvi_font_size'], $i) . ' >'.$i.' px</option>';
                     }
                     ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelLetterSpacing"><?php echo _e('Интервал между буквами', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelLetterSpacing" id="BviPanelLetterSpacing" class="postform">
-                        <option class="level-0" value="normal"  <?php selected( $this->get_option['BviPanelLetterSpacing'], 'normal' ); ?>><?php echo _e('Одинарный', 'bvi_language'); ?></option>
-                        <option class="level-0" value="average" <?php selected( $this->get_option['BviPanelLetterSpacing'], 'average' ); ?>><?php echo _e('Полуторный', 'bvi_language'); ?></option>
-                        <option class="level-0" value="big"     <?php selected( $this->get_option['BviPanelLetterSpacing'], 'big' ); ?>><?php echo _e('Двойной', 'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelLineHeight"><?php echo _e('Интервал между строками', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelLineHeight" id="BviPanelLineHeight" class="postform">
-                        <option class="level-0" value="normal"  <?php selected( $this->get_option['BviPanelLineHeight'], 'normal' ); ?>><?php echo _e('Стандартный',  'bvi_language'); ?></option>
-                        <option class="level-0" value="average" <?php selected( $this->get_option['BviPanelLineHeight'], 'average' ); ?>><?php echo _e('Средний',  'bvi_language'); ?></option>
-                        <option class="level-0" value="big"     <?php selected( $this->get_option['BviPanelLineHeight'], 'big' ); ?>><?php echo _e('Большой',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelImg"><?php echo _e('Изображения', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelImg" id="BviPanelImg" class="postform">
-                        <option class="level-0" value="grayScale"  <?php selected( $this->get_option['BviPanelImg'], 'grayScale' ); ?>><?php echo _e('Черно-белые',  'bvi_language'); ?></option>
-                        <option class="level-0" value="1"  <?php selected( $this->get_option['BviPanelImg'], '1' ); ?>><?php echo _e('Включить',  'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanelImg'], '0' ); ?>><?php echo _e('Выключить',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelImgXY"><?php echo _e('Сохранение размера исходного изображения', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelImgXY" id="BviPanelImgXY" class="postform">
-                        <option class="level-0" value="1"  <?php selected( $this->get_option['BviPanelImgXY'], '1' ); ?>><?php echo _e('Включить',  'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanelImgXY'], '0' ); ?>><?php echo _e('Выключить',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelReload"><?php echo _e('Перезагрузка страницы', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelReload" id="BviPanelReload" class="postform">
-                        <option class="level-0" value="1"  <?php selected( $this->get_option['BviPanelReload'], '1' ); ?>><?php echo _e('Включить',  'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanelReload'], '0' ); ?>><?php echo _e('Выключить',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPlay"><?php echo _e('Синтез речи', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPlay" id="BviPlay" class="postform">
-                        <option class="level-0" value="1"  <?php selected( $this->get_option['BviPlay'], '1' ); ?>><?php echo _e('Включить',  'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPlay'], '0' ); ?>><?php echo _e('Выключить',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviFixPanel"><?php echo _e('Зафиксировать панель настроек вверху страницы', 'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <input id="BviFixPanel" name="BviFixPanel" type="checkbox" value="<?php echo $this->get_option['BviFixPanel'];?>"  <?php checked( $this->get_option['BviFixPanel'], 1); ?>>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviCloseClassAndId"><?php echo _e('Отключить', 'bvi_language'); ?> class & id</label>
-                </th>
-                <td>
-                    <input id="BviCloseClassAndId" type="text" name="BviCloseClassAndId" value="<?php echo $this->get_option['BviCloseClassAndId']?>" class="regular-text code">
-                    <p><?php echo _e('Впишите название <u>class</u> или <u>id</u> через запятую для отключение при включении версии для слабовидящих.',  'bvi_language'); ?>
-                        <br>
-                        <?php echo _e('Например',  'bvi_language'); ?>: <code>.className1,.className2,#idName1,</code>
-                        <br>
-                        <?php echo _e('Правильно вводите название класса или ид иначе плагин не будет работать.',  'bvi_language'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelText"><?php echo _e('Название ссылки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <input id="BviPanelText" type="text" name="BviPanelText" value="<?php echo $this->get_option['BviPanelText'];?>" class="regular-text code">
-                    <p><?php echo _e('Название ссылки включения плагина виджет',  'bvi_language'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelCloseText"><?php echo _e('Название ссылки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <input id="BviPanelCloseText" type="text" name="BviPanelCloseText" value="<?php echo $this->get_option['BviPanelCloseText'];?>" class="regular-text code">
-                    <p><?php echo _e('Название ссылки выключения плагина',  'bvi_language'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviTextBg"><?php echo _e('Фон кнопки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <input id="BviTextBg" type="text" name="BviTextBg" value="<?php echo $this->get_option['BviTextBg'];?>" class="bvi-color-picker-BviTextBg" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviTextColor"><?php echo _e('Цвет текста кнопки и иконки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <input id="BviTextColor" type="text" name="BviTextColor" value="<?php echo $this->get_option['BviTextColor'];?>" class="bvi-color-picker-BviTextColor" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviSizeIcon"><?php echo _e('Размер иконки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviSizeIcon" id="BviSizeIcon" class="postform">
-                        <?php
-                        for ($i = 1;$i <= 49; $i++ )
-                        {
-                            echo '<option class="level-0" value="'.$i.'"'.selected( $this->get_option['BviSizeIcon'], $i ).' >'.$i.' px</option>';
-                        }
-                        ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviSizeText"><?php echo _e('Размер шрифта кнопки',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviSizeText" id="BviSizeText" class="postform">
-                        <?php
-                        for ($i = 1;$i <= 49; $i++ )
-                        {
-                            echo '<option class="level-0" value="'.$i.'"'.selected( $this->get_option['BviSizeText'], $i ).' >'.$i.' px</option>';
-                        }
-                        ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="BviPanelNoWork"><?php echo _e('<u>Включите</u> если плагин не работает',  'bvi_language'); ?></label>
-                </th>
-                <td>
-                    <select name="BviPanelNoWork" id="BviPanelNoWork" class="postform">
-                        <option class="level-0" value="1" <?php selected( $this->get_option['BviPanelNoWork'], '1' ); ?>><?php echo _e('Включить',  'bvi_language'); ?></option>
-                        <option class="level-0" value="0" <?php selected( $this->get_option['BviPanelNoWork'], '0' ); ?>><?php echo _e('Выключить',  'bvi_language'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </select>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_font" class="font-weight-bold">Шрифт</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_font'], 'arial'); ?>">
+                        <input type="radio" name="bvi_font" value="arial" id="bvi_font" autocomplete="off" <?php checked('arial', $this->get_option['bvi_font']); ?>> Arial
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_font'], 'times'); ?>">
+                        <input type="radio" name="bvi_font" value="times" id="bvi_font" autocomplete="off" <?php checked('times', $this->get_option['bvi_font']); ?>> Times New roman
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_letter_spacing" class="font-weight-bold">Межбуквенный интервал</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_letter_spacing'], 'normal'); ?>">
+                        <input type="radio" name="bvi_letter_spacing" value="normal" id="bvi_letter_spacing" autocomplete="off" <?php checked('normal', $this->get_option['bvi_letter_spacing']); ?>> Одинарный
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_letter_spacing'], 'average'); ?>">
+                        <input type="radio" name="bvi_letter_spacing" value="average" id="bvi_letter_spacing" autocomplete="off" <?php checked('average', $this->get_option['bvi_letter_spacing']); ?>> Полуторный
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_letter_spacing'], 'big'); ?>">
+                        <input type="radio" name="bvi_letter_spacing" value="big" id="bvi_letter_spacing" autocomplete="off" <?php checked('big', $this->get_option['bvi_letter_spacing']); ?>> Двойной
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_line_height" class="font-weight-bold">Междустрочный интервал</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_line_height'], 'normal'); ?>">
+                        <input type="radio" name="bvi_line_height" value="normal" id="bvi_line_height" autocomplete="off" <?php checked('normal', $this->get_option['bvi_line_height']); ?>> Стандартный
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_line_height'], 'average'); ?>">
+                        <input type="radio" name="bvi_line_height" value="average" id="bvi_line_height" autocomplete="off" <?php checked('average', $this->get_option['bvi_line_height']); ?>> Средний
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_line_height'], 'big'); ?>">
+                        <input type="radio" name="bvi_line_height" value="big" id="bvi_line_height" autocomplete="off" <?php checked('big', $this->get_option['bvi_line_height']); ?>> Большой
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_images" class="font-weight-bold">Изображения</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_images'], 'grayscale'); ?>">
+                        <input type="radio" name="bvi_images" value="grayscale" id="bvi_images" autocomplete="off" <?php checked('grayscale', $this->get_option['bvi_images']); ?>> Черно-белые
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_images'], true); ?>">
+                        <input type="radio" name="bvi_images" value="true" id="bvi_images" autocomplete="off" <?php checked(true, $this->get_option['bvi_images']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_images'], false); ?>">
+                        <input type="radio" name="bvi_images" value="false" id="bvi_images" autocomplete="off" <?php checked(false, $this->get_option['bvi_images']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_reload" class="font-weight-bold">Перезагрузка страницы</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_reload'], true); ?>">
+                        <input type="radio" name="bvi_reload" value="true" id="bvi_reload" autocomplete="off" <?php checked(true, $this->get_option['bvi_reload']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_reload'], false); ?>">
+                        <input type="radio" name="bvi_reload" value="false" id="bvi_reload" autocomplete="off" <?php checked(false, $this->get_option['bvi_reload']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_voice" class="font-weight-bold">Синтез речи</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_voice'], true); ?>">
+                        <input type="radio" name="bvi_voice" value="true" id="bvi_voice" autocomplete="off" <?php checked(true, $this->get_option['bvi_voice']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_voice'], false); ?>">
+                        <input type="radio" name="bvi_voice" value="false" id="bvi_voice" autocomplete="off" <?php checked(false, $this->get_option['bvi_voice']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_not_work" class="font-weight-bold"><u>Включите</u> если плагин не работает</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_not_work'], true); ?>">
+                        <input type="radio" name="bvi_not_work" value="true" id="bvi_not_work" autocomplete="off" <?php checked(true, $this->get_option['bvi_not_work']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_not_work'], false); ?>">
+                        <input type="radio" name="bvi_not_work" value="false" id="bvi_not_work" autocomplete="off" <?php checked(false, $this->get_option['bvi_not_work']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_flash_iframe" class="font-weight-bold">iframe</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_flash_iframe'], true); ?>">
+                        <input type="radio" name="bvi_flash_iframe" value="true" id="bvi_flash_iframe" autocomplete="off" <?php checked(true, $this->get_option['bvi_flash_iframe']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_flash_iframe'], false); ?>">
+                        <input type="radio" name="bvi_flash_iframe" value="false" id="bvi_flash_iframe" autocomplete="off" <?php checked(false, $this->get_option['bvi_flash_iframe']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_hide" class="font-weight-bold">Скрыть панель для славбовидящих</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_hide'], true); ?>">
+                        <input type="radio" name="bvi_hide" value="true" id="bvi_hide" autocomplete="off" <?php checked(true, $this->get_option['bvi_hide']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_hide'], false); ?>">
+                        <input type="radio" name="bvi_hide" value="false" id="bvi_hide" autocomplete="off" <?php checked(false, $this->get_option['bvi_hide']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
         <p class="submit">
-            <?php wp_nonce_field( 'settings_save','settings_save'); ?>
+            <?php wp_nonce_field('settings_save','settings_save'); ?>
             <input type="hidden" name="action" value="settings_save">
-            <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php echo _e('Сохранить настройки',  'bvi_language'); ?>">
+            <input type="submit" name="submit" id="submit" class="btn btn-success btn-sm" value="Сохранить настройки">
         </p>
     </form>
     <form id="bvi_settings_reset">
-        <?php wp_nonce_field( 'settings_reset','settings_reset'); ?>
+        <?php wp_nonce_field('settings_reset','settings_reset'); ?>
         <input type="hidden" name="action" value="settings_reset">
-        <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php echo _e('Сбросить настройки',  'bvi_language'); ?>">
+        <input type="submit" name="submit" id="submit" class="btn btn-info btn-sm" value="Сбросить настройки">
     </form>
 </div>

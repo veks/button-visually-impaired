@@ -1,0 +1,91 @@
+/*!
+ * Button visually impaired ie9 v1.0.7
+ */
+
+.bvi-col-1,
+.bvi-col-2,
+.bvi-col-3,
+.bvi-col-4,
+.bvi-col-5,
+.bvi-col-6,
+.bvi-col-7,
+.bvi-col-8,
+.bvi-col-9,
+.bvi-col-10,
+.bvi-col-11,
+.bvi-col-12,
+.bvi-col-sm-1,
+.bvi-col-sm-2,
+.bvi-col-sm-3,
+.bvi-col-sm-4,
+.bvi-col-sm-5,
+.bvi-col-sm-6,
+.bvi-col-sm-7,
+.bvi-col-sm-8,
+.bvi-col-sm-9,
+.bvi-col-sm-10,
+.bvi-col-sm-11,
+.bvi-col-sm-12,
+.bvi-col-md-1,
+.bvi-col-md-2,
+.bvi-col-md-3,
+.bvi-col-md-4,
+.bvi-col-md-5,
+.bvi-col-md-6,
+.bvi-col-md-7,
+.bvi-col-md-8,
+.bvi-col-md-9,
+.bvi-col-md-10,
+.bvi-col-md-11,
+.bvi-col-md-12,
+.bvi-col-lg-1,
+.bvi-col-lg-2,
+.bvi-col-lg-3,
+.bvi-col-lg-4,
+.bvi-col-lg-5,
+.bvi-col-lg-6,
+.bvi-col-lg-7,
+.bvi-col-lg-8,
+.bvi-col-lg-9,
+.bvi-col-lg-10,
+.bvi-col-lg-11,
+.bvi-col-lg-12,
+.bvi-col-xl-1,
+.bvi-col-xl-2,
+.bvi-col-xl-3,
+.bvi-col-xl-4,
+.bvi-col-xl-5,
+.bvi-col-xl-6,
+.bvi-col-xl-7,
+.bvi-col-xl-8,
+.bvi-col-xl-9,
+.bvi-col-xl-10,
+.bvi-col-xl-11,
+.bvi-col-xl-12,
+.nav-link {
+  float: left;
+}
+.bvi-row,
+.bvi-container-fluid,
+.bvi-container {
+  display: block;
+}
+.bvi-btn-link.disabled,
+.bvi-btn-link:disabled {
+  text-decoration: none;
+}
+.bvi-btn-group,
+.bvi-btn-group-vertical {
+  display: inline;
+  vertical-align: baseline;
+}
+.bvi-btn-group .bvi-btn + .bvi-btn,
+.bvi-btn-group .bvi-btn + .bvi-btn-group,
+.bvi-btn-group .bvi-btn-group + .bvi-btn,
+.bvi-btn-group .bvi-btn-group + .bvi-btn-group,
+.bvi-btn-group-vertical .bvi-btn + .bvi-btn,
+.bvi-btn-group-vertical .bvi-btn + .bvi-btn-group,
+.bvi-btn-group-vertical .bvi-btn-group + .bvi-btn,
+.bvi-btn-group-vertical .bvi-btn-group + .bvi-btn-group {
+  margin-left: -5px;
+}

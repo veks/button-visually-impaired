@@ -1,1169 +1,758 @@
 /*!
- * Button visually impaired v1.0.6
+ * Button visually impaired v1.0.7
  */
-(function($) {
-    var method = {
-        BviConsoleLog: function (setting, fun, param) {
-            if (setting == 1 ) {
-                $.each(param, function (id, value) {
-                    console.log('console.log.bvi - ' + fun + ' | [' + id + ' - (' + value + ')]');
+(function($){
+    $.bvi = function(options) {
+        var default_setting = $.extend({
+            'bvi_target': '.bvi-open',
+            'bvi_theme': 'white',
+            'bvi_font': 'arial',
+            'bvi_font_size': 16,
+            'bvi_letter_spacing': "normal",
+            'bvi_line_height': "normal",
+            'bvi_images': true,
+            'bvi_reload': false,
+            'bvi_fixed': true,
+            'bvi_voice': true,
+            'bvi_flash_iframe': true,
+            'bvi_hide': false
+        }, options);
+
+        console.log('Button visually impaired v1.0.7');
+
+        var versionIE = detectIE();
+        var selector = default_setting.bvi_target;
+        var check_bvi_theme,
+            check_bvi_font,
+            check_bvi_letter_spacing,
+            check_bvi_line_height,
+            check_bvi_font_size,
+            check_bvi_images,
+            check_bvi_fixed,
+            check_bvi_voice,
+            check_bvi_flash_iframe,
+            check_bvi_hide,
+            checkError;
+
+        function detectIE() {
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0) {
+                // IE 10 or older => return version number
+                return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+            }
+
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0) {
+                // IE 11 => return version number
+                var rv = ua.indexOf('rv:');
+                return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+            }
+
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0) {
+                // Edge (IE 12+) => return version number
+                return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            }
+
+            // other browser
+            return false;
+        }
+
+        function bvi_voice_check() {
+            if(Cookies.get('bvi-voice') === 'true'){
+                $('.bvi-link').show();
+            } else {
+                $('.bvi-link').hide();
+            }
+        }
+
+        function bvi_panel_voice(text) {
+            if(Cookies.get('bvi-voice') === 'true'){
+                if(responsiveVoice.voiceSupport()) {
+                    responsiveVoice.setDefaultVoice("Russian Female");
+                    responsiveVoice.cancel();
+                    responsiveVoice.speak(text);
+                }
+            } else {
+                responsiveVoice.cancel();
+            }
+        }
+
+        function bvi_voice() {
+            if(responsiveVoice.voiceSupport() || versionIE >= 11 || versionIE >= 10 || versionIE >= 9) {
+                responsiveVoice.setDefaultVoice("Russian Female");
+                var bvi_voice = $(".bvi-voice");
+                bvi_voice.each(function(index){
+                    var bvi_voice_text_id = 'bvi-voice-text-id-' + index;
+                    $(this).wrapInner('<div class="bvi-voice-text ' + bvi_voice_text_id + '"></div>');
+                    $(this).prepend('<div class="bvi bvi-link" data-bvi-voice-class=".'+ bvi_voice_text_id +'"><div class="bvi-btn-group">' +
+                        '<a href="#" class="bvi-play bvi-btn bvi-btn-outline-dark bvi-btn-sm">Воспроизвести</a>' +
+                        '<a href="#" class="bvi-stop bvi-btn bvi-btn-outline-dark bvi-btn-sm">Стоп</i></a>' +
+                        '</div></div>');
+                });
+                $('.bvi-play').click(function() {
+                    var bvi_voice_class = $(this).parent().parent().data('bvi-voice-class');
+                    var bvi_voice_text = $(bvi_voice_class).text();
+                    if(bvi_voice_class) {
+                        if(Cookies.get('bvi-voice') === 'true'){
+                            responsiveVoice.speak(bvi_voice_text);
+                        }
+                    } else {
+                        responsiveVoice.cancel();
+                    }
+                    return false;
+                });
+                $('.bvi-stop').click(function () {
+                    responsiveVoice.cancel();
+                    return false;
                 });
 
             } else {
-                console.log('Bvi [console.log.bvi - off]');
+                $('.bvi-btn-voice').hide();
+                set('data-bvi-voice', 'bvi-voice', false);
+                console.log('Ваш браузер не поддерживает синтез речи.')
             }
-        },
-        Init: function(setting) {
-            var selector = $(this).selector;
-            var setting = $.extend({
-                BviPanel: 1,
-                BviPanelActive: 0,
-                BviPanelBg: "white",
-                BviPanelFontFamily: "default",
-                BviPanelFontSize: "12",
-                BviPanelLetterSpacing: "normal",
-                BviPanelLineHeight: "normal",
-                BviPanelImg: 1,
-                BviPanelImgXY: 1,
-                BviPanelReload: 0,
-                BviPanelText: 'Версия для слабовидящих',
-                BviPanelCloseText: 'Обычная версия сайта',
-                BviCloseClassAndId: '',
-                BviFixPanel: 1,
-                BviPlay: 0,
-                BviFlash: 0,
-                BviConsoleLog: 1,
-                BviPanelHide: 0
-            }, setting);
+        }
 
-            console.log('Button visually impaired v1.0.6');
-
-            function BviOn() {
-
-                if (Cookies.get("bvi-panel") == '1') {
-                    $('*').each(function () {
-                        if (!$(this).attr('data-bvi-original')) $(this).attr('data-bvi-original', $(this).attr('style'));
-                    });
-                    BviPanel();
-                    method.Bvi(setting);
-                }
-            }
-
-            BviOn();
-
-            function BviPanel() {
-                $(selector).addClass('bvi-hide');
-                $('.bvi-panel-open-menu').addClass('bvi-hide');
-                $(selector).after($('<a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i> '+setting.BviPanelCloseText+'</a>'));
-                $('.bvi-panel-open-menu').after($('<li class="bvi-panel-close"><a href="#" class="bvi-panel-close" title="'+setting.BviPanelCloseText+'"> '+setting.BviPanelCloseText+'</a></li>'));
-                $(setting.BviCloseClassAndId).hide();
-                $('body').wrapInner('<div class="bvi-body"></div>');//wrapInner
-                $('<div class="bvi-panel"></div>').prependTo("body");
-                var scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-                if (setting.BviFixPanel == '1') {
-                    if (scroll > 99) {
-                        $(".bvi-panel").addClass("bvi-panel-fixed");
-                    }
-
-                    $(window).scroll(function () {
-                        if ($(this).scrollTop() >= 99) {
-                            $(".bvi-panel").addClass("bvi-panel-fixed");
-                            $(".bvi-panel").css({
-                                "left": 0,
-                                "top": 0,
-                                "right": 0,
-                                "margin-left": "auto",
-                                "margin-right": "auto",
-                                "position": "fixed",
-                                "z-index": 999999,
-                                "margin-bottom": "20px"
-                            });
-                            $('.bvi-title').hide();
-                            $('#bvi-color-text').hide();
-                            $('#bvi-img-text').hide();
-                            $('#bvi-size-text').hide();
-                            $('#bvi-size-number').hide();
-                        } else {
-                            $(".bvi-panel").removeClass("bvi-panel-fixed");
-                            $(".bvi-panel").removeAttr("style");
-                            $('.bvi-title').show();
-                            $('#bvi-color-text').show();
-                            $('#bvi-img-text').show();
-                            $('#bvi-size-text').show();
-                            $('#bvi-size-number').show();
-                        }
-                    });
-                }
-
-                $('<div class="bvi-container">'+
-                    '<div class="bvi-row">'+
-                    '<div class="bvi-panel-menu">'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12 bvi-bg bvi-animated bvi-slideInDown">'+
-                    '<div class="bvi-row">'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-2 bvi-col-lg-2 bvi-vertical">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Размер шрифта</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-font-size-minus" class="bvi-btn bvi-btn-default" title="Уменьшить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>-</b></a>'+
-                    '<a href="#" id="bvi-font-size-plus" class="bvi-btn bvi-btn-default" title="Увеличить шрифт"><i class="bvi-glyphicon bvi-glyphicon-font"></i><b>+</b></a>'+
-                    '</div>'+
-                    '<div class="bvi-title-text"><span id="bvi-size-number"></span> <span id="bvi-size-text"></span></div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-3 bvi-vertical">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Цвета сайта</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-color-white" class="bvi-btn bvi-btn-white" title="Цвет сайта: Черным по белому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
-                    '<a href="#" id="bvi-color-black" class="bvi-btn bvi-btn-black" title="Цвет сайта: Белым по черному"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
-                    '<a href="#" id="bvi-color-blue" class="bvi-btn bvi-btn-blue" title="Цвет сайта: Темно-синим по голубому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
-                    '<a href="#" id="bvi-color-brown" class="bvi-btn bvi-btn-brown" title="Цвет сайта: Коричневым по бежевому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
-                    '<a href="#" id="bvi-color-green" class="bvi-btn bvi-btn-green" title="Цвет сайта: Зеленым по темно-коричневому"><i class="bvi-glyphicon bvi-glyphicon-font"></i></a>'+
-                    '</div>'+
-                    '<div class="bvi-title-text"><span id="bvi-color-text"></span></div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-3 bvi-col-lg-3 bvi-vertical">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Изображения</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-img-on" class="bvi-btn bvi-btn-default" title="Включить" style="color: green"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
-                    '<a href="#" id="bvi-img-off" class="bvi-btn bvi-btn-default" title="Выключить" style="color: red"><i class="bvi-glyphicon bvi-glyphicon-picture"></i></a>'+
-                    '<a href="#" id="bvi-img-grayscale" class="bvi-btn bvi-btn-default" title="Черно-белые"><i class="bvi-glyphicon bvi-glyphicon-adjust"></i></a>'+
-                    '</div>'+
-                    '<div class="bvi-title-text"><span id="bvi-img-text"></span></div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-6 bvi-col-sm-6 bvi-col-md-4 bvi-col-lg-4">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Дополнительно</div>'+
-                    '<div class="bvi-btn-group">'+
-                    //'<div class="bvi-btn-toolbar">'+
-                    '<a href="#" id="bvi-voice-off" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-off"></i></a>'+
-                    '<a href="#" id="bvi-voice-on" class="bvi-btn bvi-btn-default" title="Синтез речи"><i class="bvi-glyphicon bvi-glyphicon-volume-up"></i></a>'+
-                    ///'</div>'+
-                    '<a href="#" id="bvi-settings" class="bvi-btn bvi-btn-default" title="Настройки"><i class="bvi-glyphicon bvi-glyphicon-cog"></i> Настройки</a>'+
-                    '<a href="#" id="bvi-close" class="bvi-btn bvi-btn-default" title="Обычная версия сайта"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i></a>'+
-                    '<a href="#" id="bvi-panel-hide" class="bvi-btn bvi-btn-default" title="Свернуть панель для слабовидящих"><i class="bvi-glyphicon bvi-glyphicon-arrow-up"></i></a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-row">'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
-                    '<div class="bvi-settings">'+
-                    '<hr>'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Кернинг</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-letter-spacing-normal" class="bvi-btn bvi-btn-default" title="Стандартный">Стандартный</a>'+
-                    '<a href="#" id="bvi-letter-spacing-average" class="bvi-btn bvi-btn-default" title="Средний">Средний</a>'+
-                    '<a href="#" id="bvi-letter-spacing-big" class="bvi-btn bvi-btn-default" title="Большой">Большой</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Интервал</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-line-height-normal" class="bvi-btn bvi-btn-default" title="Одинарный">Одинарный</a>'+
-                    '<a href="#" id="bvi-line-height-average" class="bvi-btn bvi-btn-default" title="Полуторный">Полуторный</a>'+
-                    '<a href="#" id="bvi-line-height-big" class="bvi-btn bvi-btn-default" title="Двойной">Двойной</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-4">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-title-header">Гарнитура</div>'+
-                    '<div class="bvi-btn-group">'+
-                    '<a href="#" id="bvi-font-family-default" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
-                    //'<a href="#" id="bvi-font-family-arial" class="bvi-btn bvi-btn-default" title="Без засечек">Без засечек</a>'+
-                    '<a href="#" id="bvi-font-family-times-new-roman" class="bvi-btn bvi-btn-default" title="С засечками">С засечками</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-btn-toolbar bvi-left">'+
-                    '<a href="#" id="bvi-flash-on" class="bvi-btn bvi-btn-default" title="Включить Фрейм"><i class="bvi-glyphicon bvi-glyphicon-flash"></i> Включить Фрейм</a>'+
-                    '<a href="#" id="bvi-flash-off" class="bvi-btn bvi-btn-default" title="Отключить Фрейм"><i class="bvi-glyphicon bvi-glyphicon-flash"></i> Выключить Фрейм</a>'+
-                    '<a href="#" id="bvi-settings-default" class="bvi-btn bvi-btn-default" title="Вернуть стандартные настройки"><i class="bvi-glyphicon bvi-glyphicon-refresh"></i> Вернуть стандартные настройки</a>'+
-                    '<a href="#" id="bvi-close" class="bvi-btn bvi-btn-default" title="Обычная версия сайта"><i class="bvi-glyphicon bvi-glyphicon-eye-close"></i> Обычная версия сайта</a>'+
-                    '</div>'+
-                    '<div class="bvi-btn-toolbar bvi-right">'+
-                    '<a href="#" id="bvi-settings-close" class="bvi-btn bvi-btn-default" title="Закрыть"><i class="bvi-glyphicon bvi-glyphicon-remove"></i> Закрыть</a>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-col-xs-12 bvi-col-sm-12 bvi-col-md-12 bvi-col-lg-12">'+
-                    '<div class="bvi-rows">'+
-                    '<div class="bvi-copy"><a href="http://bvi.isvek.ru/" target="_blank" title="isvek.ru Версия для слабовидящих">isvek.ru Версия для слабовидящих</a><sup>v1.0.6</sup></div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-                    '<div class="bvi-panel-show"><a href="#" id="bvi-panel-show" class="bvi-btn-panel-show" title="Показать панель для слабовидящих"><i class="bvi-glyphicon bvi-glyphicon-eye"></i></a></div>'+
-                    '</div>'+
-                    '</div>').appendTo(".bvi-panel");
-            }
-
-            if (setting.BviPanelActive == 0 ) {
-                $('.bvi-panel-open-menu,'+selector).click( function () {
-                    Cookies.set("bvi-selector", selector, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-panel", setting.BviPanel, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-img", setting.BviPanelImg, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-reload", setting.BviPanelReload, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-reload", setting.BviPanelReload, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-voice", setting.BviPlay, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-flash", setting.BviFlash, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-console-log", setting.BviConsoleLog, {
-                        path: "/"
-                    });
-                    Cookies.set("bvi-panel-hide", setting.BviPanelHide, {
-                        path: "/"
-                    });
-                    if (Cookies.get("bvi-voice") == '1') {
-                        responsiveVoice.speak("Версия сайта для слабовидящих", "Russian Female");
-                    }
-                    BviOn();
-                    return false;
-                });
-            }
-        },
-        Bvi: function (setting) {
-            function BviBgColor() {
-                if (Cookies.get("bvi-bgcolor") == 'white') {
-                    $('.bvi-body').addClass('bvi-color-white');
-                    $('.bvi-btn-white').addClass('active');
-                    BviReturnSet({
-                        backgroundcolor: "#ffffff",
-                        color: "#000000"
-                    });
-                    $('#bvi-color-text').html('Черным по белому');
-                } else {
-                    $('.bvi-body').removeClass('bvi-color-white');
-                    $('.bvi-btn-white').removeClass('active');
-                }
-
-                if (Cookies.get("bvi-bgcolor") == 'black') {
-                    $('.bvi-body').addClass('bvi-color-black');
-                    $('.bvi-btn-black').addClass('active');
-                    BviReturnSet({
-                        backgroundcolor: "#000000",
-                        color: "#ffffff"
-                    });
-                    $('#bvi-color-text').html('Белым по черному');
-                } else {
-                    $('.bvi-body').removeClass('bvi-color-black');
-                    $('.bvi-btn-black').removeClass('active');
-                }
-
-                if (Cookies.get("bvi-bgcolor") == 'blue') {
-                    $('.bvi-body').addClass('bvi-color-blue');
-                    $('.bvi-btn-blue').addClass('active');
-                    BviReturnSet({
-                        backgroundcolor: "#9DD1FF",
-                        color: "#063462"
-                    });
-                    $('#bvi-color-text').html('Темно-синим по голубому');
-                } else {
-                    $('.bvi-body').removeClass('bvi-color-blue');
-                    $('.bvi-btn-blue').removeClass('active');
-                }
-
-                if (Cookies.get("bvi-bgcolor") == 'brown') {
-                    $('.bvi-body').addClass('bvi-color-brown');
-                    $('.bvi-btn-brown').addClass('active');
-                    BviReturnSet({
-                        backgroundcolor: "#f7f3d6",
-                        color: "#4d4b43"
-                    });
-                    $('#bvi-color-text').html('Коричневым по бежевому');
-                } else {
-                    $('.bvi-body').removeClass('bvi-color-brown');
-                    $('.bvi-btn-brown').removeClass('active');
-                }
-
-                if (Cookies.get("bvi-bgcolor") == 'green') {
-                    $('.bvi-body').addClass('bvi-color-green');
-                    $('.bvi-btn-green').addClass('active');
-                    BviReturnSet({
-                        backgroundcolor: "#3B2716",
-                        color: "#A9E44D"
-                    });
-                    $('#bvi-color-text').html('Зеленым по темно-коричневому');
-                } else {
-                    $('.bvi-body').removeClass('bvi-color-green');
-                    $('.bvi-btn-green').removeClass('active');
-                }
-            }
-
-            function BviPanelHide() {
-                if (Cookies.get("bvi-panel-hide") == '1') {
-                    $('.bvi-panel-menu').hide();//slideToggle("slow");
-                    $('#bvi-panel-hide').show();
-                    $('#bvi-panel-show').show();
-                } else {
-                    $('.bvi-panel-menu').show();
-                    $('#bvi-panel-show').hide();
-                }
-
-            }
-            function BviFontSize() {
-                size = Cookies.get("bvi-font-size");
-                if (size <= 100){
-                    BviReturnSet({
-                        fontsize: size
-                    });
-                }
-            }
-
-            function BviLetterSpacing() {
-                if (Cookies.get("bvi-letter-spacing") === "normal") {
-                    $("#bvi-letter-spacing-normal").addClass("active");
-                    BviReturnSet({
-                        letterspacing: "0px"
-                    })
-                } else {
-                    $("#bvi-letter-spacing-normal").removeClass("active")
-                }
-                if (Cookies.get("bvi-letter-spacing") === "average") {
-                    $("#bvi-letter-spacing-average").addClass("active");
-                    BviReturnSet({
-                        letterspacing: "2px"
-                    })
-                } else {
-                    $("#bvi-letter-spacing-average").removeClass("active")
-                }
-                if (Cookies.get("bvi-letter-spacing") === "big") {
-                    $("#bvi-letter-spacing-big").addClass("active");
-                    BviReturnSet({
-                        letterspacing: "4px"
-                    })
-                } else {
-                    $("#bvi-letter-spacing-big").removeClass("active")
-                }
-            }
-
-            function BviLineHeight() {
-                if (Cookies.get("bvi-line-height") === "normal") {
-                    $("#bvi-line-height-normal").addClass("active");
-                    BviReturnSet({
-                        lineheight: "1.5"
-                    })
-                } else {
-                    $("#bvi-line-height-normal").removeClass("active")
-                }
-                if (Cookies.get("bvi-line-height") === "average") {
-                    $("#bvi-line-height-average").addClass("active");
-                    BviReturnSet({
-                        lineheight: "2"
-                    })
-                } else {
-                    $("#bvi-line-height-average").removeClass("active")
-                }
-                if (Cookies.get("bvi-line-height") === "big") {
-                    $("#bvi-line-height-big").addClass("active");
-                    BviReturnSet({
-                        lineheight: "2.5"
-                    })
-                } else {
-                    $("#bvi-line-height-big").removeClass("active")
-                }
-            }
-
-            function BviFontFamily() {
-                if (Cookies.get("bvi-font-family") == "arial") {
-                    $("#bvi-font-family-arial").addClass("active");
-                    BviReturnSet({
-                        fontfamily: "Arial, sans-serif"
-                    })
-                } else {
-                    $("#bvi-font-family-arial").removeClass("active")
-                }
-                if (Cookies.get("bvi-font-family") == "times") {
-                    $("#bvi-font-family-times-new-roman").addClass("active");
-                    BviReturnSet({
-                        fontfamily: 'Times New roman'
-                    })
-                } else {
-                    $("#bvi-font-family-times-new-roman").removeClass("active")
-                }
-                if (Cookies.get("bvi-font-family") == "default") {
-                    $("#bvi-font-family-default").addClass("active");
-                    BviReturnSet({
-                        fontfamily: ''
-                    })
-                } else {
-                    $("#bvi-font-family-default").removeClass("active")
-                }
-            }
-
-            function BviFlash() {
-                if (Cookies.get("bvi-flash") == 1) {
-                    $('#bvi-flash-off').show();
-                    $('#bvi-flash-on').hide();
-                    $('iframe,video').show();
-                } else {
-                    $('#bvi-flash-on').show();
-                    $('#bvi-flash-off').hide();
-                    $('iframe,video').hide();
-                }
-            }
-
-            function BviReturnSet(setting) {
-                $("body, body *").not(".bvi-panel, .bvi-panel *, .fa, .glyphicon, .dashicons, .bvi-glyphicon").each(function () {
-                    $(this).css({
-                        "font-family": setting.fontfamily,
-                        "background-color": setting.backgroundcolor,
-                        "background-image": "none",
-                        "color": setting.color,
-                        "font-size": setting.fontsize + 'pt',
-                        "box-shadow": "none",
-                        "text-shadow": "none",
-                        "letter-spacing": setting.letterspacing,
-                        "border-color": setting.color,
-                        "line-height": setting.lineheight
-                    });
-                });
-                $("body").css({
-                    "margin": "0px",
-                    "padding": "0px"
-                });
-
-                var numbers = String(setting.fontsize);
-                var numbers = numbers.charAt(numbers.length-1);
-                var numbers = parseInt(numbers, 10);
-
-                if (numbers == 1) {
-                    var _numbers = 'пункт';
-                } else if ((numbers > 1) && (numbers < 5)) {
-                    var _numbers = 'пункта';
-                } else {
-                    var _numbers = 'пунктов';
-                }
-
-                $('#bvi-size-number').text(setting.fontsize);
-                $('#bvi-size-text').text(_numbers);
-
-            }
-            
-            function BviImg() {
-                if (Cookies.get("bvi-img") == '1') {
-
-                    $("#bvi-img-on").addClass('active');
-                    $("#bvi-img-grayscale").removeClass('active');
-                    $("#bvi-img-off").removeClass('active');
-
-                    $(".bvi-img-grayscale").remove();
-                    $(".bvi-img-off").remove();
-                    $(".bvi-img-on").remove();
-
-                    $("img").each(function() {
-                        $(".bvi-img-grayscale").remove();
-                        $(".bvi-img-off").remove();
-                        $(this).show();
-                    });
-                    $('#bvi-img-text').html('Включены');
-                } else if (Cookies.get("bvi-img") == '0') {
-
-                    $("#bvi-img-off").addClass('active');
-                    $("#bvi-img-grayscale").removeClass('active');
-                    $("#bvi-img-on").removeClass('active');
-
-                    $(".bvi-img-on").remove();
-                    $(".bvi-img-off").remove();
-                    $(".bvi-img-grayscale").remove();
-
-                    $("img").each(function() {
-                        var alt = this.alt || 'Нет описания к изображению';
-                        var imgClass = $(this).attr("class") || '';
-                        var imgId = $(this).attr("id") || 'bvi-img-off';
-                        $(this).hide();
-                        if (Cookies.get("bvi-img-XY") == '1') {
-                            $(this).after($('<div class="bvi-img-off '+imgClass+'" id="'+imgId+'" style="width: ' + $(this).width() + "px; height: " + $(this).height() + 'px">').html(alt))
-                        } else {
-                            $(this).after($('<div class="bvi-img-off">').text(alt))
-                        }
-                    });
-                    $('#bvi-img-text').html('Выключены');
-                } else if (Cookies.get("bvi-img") == 'grayScale') {
-
-                    $("#bvi-img-grayscale").addClass('active');
-                    $("#bvi-img-off").removeClass('active');
-                    $("#bvi-img-on").removeClass('active');
-
-                    $(".bvi-img-on").remove();
-                    $(".bvi-img-off").remove();
-                    $(".bvi-img-grayscale").remove();
-
-                    $("img").each(function() {
-                        var alt = this.alt || 'Нет описания к изображению';
-                        var src = this.src;
-                        var imgClass = $(this).attr("class") || 'bvi-class';
-                        var imgId = $(this).attr("id") || 'bvi-img-off';
-
-                        $(this).hide();
-                        $(this).after($('<img src="'+src+'" alt="'+alt+'" id="bvi-img-grayscale '+imgId+'" class="bvi-img-grayscale '+imgClass+'">'));
-                    });
-
-                    $('#bvi-img-text').html('Черно-белые');
-                } else {
-                    $("img").each(function() {
-                        $(".bvi-img-grayscale").remove();
-                        $(".bvi-img-off").remove();
-                        $(this).show();
-                    });
-                }
-            }
-
-            function BviVoice() {
-                if (Cookies.get("bvi-voice") === '1') {
-                    $('#bvi-voice-on').hide();
-                    $('#bvi-voice-off').show();
-                    function getSelectionText() {
-                        var text = "";
-                        if (window.getSelection) {
-                            text = window.getSelection().toString();
-                        } else if (document.selection && document.selection.type != "Control") {
-                            text = document.selection.createRange().text;
-                        }
-                        return text;
-                    }
-                    /*
-                    $(document).mouseup(function () {
-                        setTimeout(function () {
-                            responsiveVoice.cancel();
-                            responsiveVoice.speak(getSelectionText(), "Russian Female");
-                        }, 1);
-                        return false;
-                    });
-                    */
-                } else {
-                    responsiveVoice.cancel();
-                    $('#bvi-voice-on').show();
-                    $('#bvi-voice-off').hide();
-                }
-            }
-
-            $("#bvi-close, .bvi-panel-close").click(function() {
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Обычная версия сайта", "Russian Female");
-                }
-
-                $('.bvi-animated').removeClass('bvi-slideInDown').addClass('bvi-fadeOutUp');
-
-                $('*').each(function(){
-                    $(this).removeAttr("style",'font-family');
-                    $(this).removeAttr("style",'background-color');
-                    $(this).removeAttr("style",'background-image');
-                    $(this).removeAttr("style",'color');
-                    $(this).removeAttr("style",'font-size');
-                    $(this).removeAttr("style",'box-shadow');
-                    $(this).removeAttr("style",'text-shadow');
-                    $(this).removeAttr("style",'letter-spacing');
-                    $(this).removeAttr("style",'border-color');
-                    $(this).attr("style",$(this).attr('data-bvi-original'));
-                    $(this).removeAttr('data-bvi-original');
-                });
-
-                $(setting.BviCloseClassAndId).show();
-                $('.bvi-panel-open-menu').removeClass('bvi-hide');
-                $(Cookies.get("bvi-selector")).removeClass('bvi-hide');
-                $(".bvi-panel, .bvi-panel-close").remove();
-                $(".bvi-img-off").remove();
-                $(".bvi-img-grayscale").remove();
-                $('body > .bvi-body').contents().unwrap();
-
-                if (Cookies.get("bvi-reload") == "1") {
+        function bvi_click() {
+            $("#bvi-panel-close, .bvi-panel-close").click(function() {
+                if (Cookies.get("bvi-reload") === 'true') {
                     document.location.reload(true);
                 }
-
-                Cookies.remove("bvi-selector", {
-                    path: "/"
+                $('.bvi-img-off').remove();
+                $("img").each(function() {
+                    $(this).show();
+                    $(this).removeClass('grayscale');
                 });
-
-                Cookies.remove("bvi-panel", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-bgcolor", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-font-size", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-letter-spacing", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-line-height", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-font-family", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-img", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-img-XY", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-reload", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-voice", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-flash", {
-                    path: "/"
-                });
-
-                Cookies.remove("bvi-panel-hide", {
-                    path: "/"
-                });
-                BviBgColor();
-                BviFontSize();
-                BviLetterSpacing();
-                BviLineHeight();
-                BviFontFamily();
-                BviImg();
-                BviVoice();
-                BviFlash();
-                BviPanelHide();
-                responsiveVoice.cancel();
-                $('iframe,video').show();
-                return false;
-            });
-
-            $("#bvi-flash-on").click(function() {
-                Cookies.set("bvi-flash", "1", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Включить фрейм", "Russian Female");
+                Cookies.remove("bvi-panel-active", {path: "/"});
+                Cookies.remove("bvi-font-size", {path: "/" });
+                Cookies.remove("bvi-theme", {path: "/"});
+                Cookies.remove("bvi-images", {path: "/"});
+                Cookies.remove("bvi-line-height", {path: "/"});
+                Cookies.remove("bvi-letter-spacing", {path: "/"});
+                Cookies.remove("bvi-voice", {path: "/"});
+                Cookies.remove("bvi-font-family", {path: "/"});
+                Cookies.remove("bvi-panel-hide", {path: "/"});
+                Cookies.remove("bvi-flash-iframe", {path: "/"});
+                Cookies.remove("bvi-reload", {path: "/"});
+                if(responsiveVoice.voiceSupport()) {
+                        responsiveVoice.cancel();
                 }
-                BviFlash();
+                active();
+                bvi_panel_voice('Обычная версия сайта');
                 return false;
             });
 
-            $("#bvi-flash-off").click(function() {
-                Cookies.set("bvi-flash", "0", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Выключить фрейм", "Russian Female");
-                }
-                BviFlash();
+            $('#bvi-panel-hide').click(function() {
+                $('.bvi-panel').toggle(0);
+                $('.bvi-eye-link').toggle(0);
+                set('data-bvi-panel-hide', 'bvi-panel-hide', true);
+                bvi_panel_voice('Панель скрыта');
                 return false;
             });
 
-            $("#bvi-letter-spacing-normal").click(function() {
-                Cookies.set("bvi-letter-spacing", "normal", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Кернинг: Стандартный", "Russian Female");
-                }
-                BviLetterSpacing();
+            $('#bvi-panel-show').click(function() {
+                $('.bvi-panel').toggle(0);
+                $('.bvi-eye-link').toggle(0);
+                set('data-bvi-panel-hide', 'bvi-panel-hide', false);
+                bvi_panel_voice('Панель открыта');
                 return false;
             });
 
-            $("#bvi-letter-spacing-average").click(function() {
-                Cookies.set("bvi-letter-spacing", "average", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Кернинг: Средний", "Russian Female");
-                }
-                BviLetterSpacing();
+            $('#bvi-setting').click(function() {
+                $('.bvi-setting-menu').toggle(0);
+                $(this).toggleClass("active");
+                bvi_panel_voice('Дополнительные настройки');
                 return false;
             });
 
-            $("#bvi-letter-spacing-big").click(function() {
-                Cookies.set("bvi-letter-spacing", "big", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Кернинг: Большой", "Russian Female");
-                }
-                BviLetterSpacing();
+            $('#bvi-setting-close').click(function() {
+                $('.bvi-setting-menu').toggle(0);
+                $('#bvi-setting').toggleClass("active");
+                bvi_panel_voice('Дополнительные настройки закрыты');
                 return false;
             });
 
-            $("#bvi-font-size-minus").click(function() {
+            $('#bvi-font-size-less').click(function () {
                 size = parseFloat(Cookies.get("bvi-font-size")) - 1;
-                $(this).addClass('active');
-                $('#bvi-font-size-plus').removeClass('active');
-
-                if (size >= 0) {
-                    Cookies.set("bvi-font-size", size, {
-                        path: "/"
-                    });
-
-                    BviFontSize();
-                    var numbers = String(size);
-                    var numbers = numbers.charAt(numbers.length-1);
-                    var numbers = parseInt(numbers, 10);
-
-                    if (numbers == 1) {
-                        var _numbers = 'пункт';
-                    } else if ((numbers > 1) && (numbers < 5)) {
-                        var _numbers = 'пункта';
-                    } else {
-                        var _numbers = 'пунктов';
-                    }
-
-                    method.BviConsoleLog(setting.BviConsoleLog, "click", {"bvi-font-size[]":"Размер шрифта: "+ size +" "+ _numbers});
-                    if (Cookies.get("bvi-voice") == '1') {
-                        responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
-                    }
+                $(this).addClass('active').siblings().removeClass('active');
+                if (size != 0) {
+                    set('data-bvi-size', 'bvi-font-size', size);
+                    bvi_panel_voice('Размер шрифта уменьшен');
                 }
                 return false;
             });
 
-            $("#bvi-font-size-plus").click(function() {
-                $(this).addClass('active');
-                $('#bvi-font-size-minus').removeClass('active');
+            $('#bvi-font-size-more').click(function () {
                 size = parseFloat(Cookies.get("bvi-font-size")) + 1;
-
-                if (size <= 50) {
-                    Cookies.set("bvi-font-size", size, {
-                        path: "/"
-                    });
-
-                    BviFontSize();
-                    var numbers = String(size);
-                    var numbers = numbers.charAt(numbers.length-1);
-                    var numbers = parseInt(numbers, 10);
-
-                    if (numbers == 1) {
-                        var _numbers = 'пункт';
-                    } else if ((numbers > 1) && (numbers < 5)) {
-                        var _numbers = 'пункта';
-                    } else {
-                        var _numbers = 'пунктов';
-                    }
-
-                    method.BviConsoleLog(setting.BviConsoleLog, "click", {"bvi-font-size[]":"Размер шрифта: "+ size +" "+ _numbers});
-                    if (Cookies.get("bvi-voice") == '1') {
-                        responsiveVoice.speak("Размер шрифта: " + size +" "+ _numbers, "Russian Female");
-                    }
+                $(this).addClass('active').siblings().removeClass('active');
+                if (size != 40) {
+                    set('data-bvi-size', 'bvi-font-size', size);
+                    bvi_panel_voice('Размер шрифта увеличен');
                 }
                 return false;
             });
 
-            $("#bvi-voice-on").click(function() {
-                Cookies.set("bvi-voice", "1", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-voice[1]':'Синтез речи включён'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Синтез речи включён", "Russian Female");
-                }
-                BviVoice();
+            $("#bvi-theme-white").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-theme', 'bvi-theme', 'white');
+                bvi_panel_voice('Цвет сайта черным по белому');
                 return false;
             });
 
-            $("#bvi-voice-off").click(function() {
-                Cookies.set("bvi-voice", "0", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-voice[0]':'Синтез речи выключен'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Синтез речи выключен", "Russian Female");
-                }
-                BviVoice();
+            $("#bvi-theme-black").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-theme', 'bvi-theme', 'black');
+                bvi_panel_voice('Цвет сайта белым по черному');
                 return false;
             });
 
-            $("#bvi-color-white").click(function() {
-                Cookies.set("bvi-bgcolor", "white", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[white]':'Цвет сайта: Черным по белому'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Цвет сайта: Черным по белому", "Russian Female");
-                }
-                BviBgColor();
+            $("#bvi-theme-blue").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-theme', 'bvi-theme', 'blue');
+                bvi_panel_voice('Цвет сайта тёмно-синим по голубому');
                 return false;
             });
 
-            $("#bvi-color-black").click(function() {
-                Cookies.set("bvi-bgcolor", "black", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[black]':'Цвет сайта: Белым по черному'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Цвет сайта: Белым по черному", "Russian Female");
-                }
-                BviBgColor();
+            $("#bvi-theme-brown").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-theme', 'bvi-theme', 'brown');
+                bvi_panel_voice('Цвет сайта коричневым по бежевому');
                 return false;
             });
 
-            $("#bvi-color-blue").click(function() {
-                Cookies.set("bvi-bgcolor", "blue", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[blue]':'Цвет сайта: Темно-синим по голубому'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Цвет сайта: Темно-синим по голубому", "Russian Female");
-                }
-                BviBgColor();
+            $("#bvi-theme-green").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-theme', 'bvi-theme', 'green');
+                bvi_panel_voice('Цвет сайта зеленым по тёмно-коричневому');
                 return false;
             });
 
-            $("#bvi-color-brown").click(function() {
-                Cookies.set("bvi-bgcolor", "brown", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[brown]':'Цвет сайта: Коричневым по бежевому'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Цвет сайта: Коричневым по бежевому", "Russian Female");
-                }
-                BviBgColor();
+            $('#bvi-images-true').click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-images', 'bvi-images', true);
+                bvi_panel_voice('Изображения включены');
                 return false;
             });
 
-            $("#bvi-color-green").click(function() {
-                Cookies.set("bvi-bgcolor", "green", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-bgcolor[green]':'Цвет сайта: Зеленым по темно-коричневому'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Цвет сайта: Зеленым по темно-коричневому", "Russian Female");
-                }
-                BviBgColor();
+            $('#bvi-images-false').click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-images', 'bvi-images', false);
+                bvi_panel_voice('Изображения выключены');
                 return false;
             });
 
-            $("#bvi-img-on").click(function() {
-                Cookies.set("bvi-img", "1", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[1]':'Изображения включены'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Изображения включены", "Russian Female");
-                }
-                BviImg();
-                return false;
-            });
-
-            $("#bvi-img-off").click(function() {
-                Cookies.set("bvi-img", "0", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[0]':'Изображения выключены'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Изображения выключены", "Russian Female");
-                }
-                BviImg();
-                return false;
-            });
-
-            $("#bvi-img-grayscale").click(function() {
-                Cookies.set("bvi-img", "grayScale", {
-                    path: "/"
-                });
-                method.BviConsoleLog(setting.BviConsoleLog, 'click', {'bvi-img[grayScale]':'Изображения черно-белые'});
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Изображения черно-белые", "Russian Female");
-                }
-                BviImg();
-                return false;
-            });
-
-            $("#bvi-settings, #bvi-settings-close").click(function() {
-                $(".bvi-settings").slideToggle("slow");
-                $("#bvi-settings").toggleClass('active');
+            $('#bvi-images-grayscale').click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-images', 'bvi-images', 'grayscale');
+                bvi_panel_voice('Изображения чёрно-белые');
                 return false;
             });
 
             $("#bvi-line-height-normal").click(function() {
-                Cookies.set("bvi-line-height", "normal", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Интервал: Одинарный", "Russian Female");
-                }
-                BviLineHeight();
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-line-height', 'bvi-line-height', 'normal');
+                bvi_panel_voice('Междустрочный интервал cтандартный');
                 return false;
             });
 
             $("#bvi-line-height-average").click(function() {
-                Cookies.set("bvi-line-height", "average", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Интервал: Полуторный", "Russian Female");
-                }
-                BviLineHeight();
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-line-height', 'bvi-line-height', 'average');
+                bvi_panel_voice('Междустрочный интервал средний');
                 return false;
             });
 
             $("#bvi-line-height-big").click(function() {
-                Cookies.set("bvi-line-height", "big", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Интервал: Двойной", "Russian Female");
-                }
-                BviLineHeight();
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-line-height', 'bvi-line-height', 'big');
+                bvi_panel_voice('Междустрочный интервал большой');
+                return false;
+            });
+
+            $("#bvi-letter-spacing-normal").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-letter-spacing', 'bvi-letter-spacing', 'normal');
+                bvi_panel_voice('Межбуквенный интервал одинарный');
+                return false;
+            });
+
+            $("#bvi-letter-spacing-average").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-letter-spacing', 'bvi-letter-spacing', 'average');
+                bvi_panel_voice('Межбуквенный интервал полуторный');
+                return false;
+            });
+
+            $("#bvi-letter-spacing-big").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-letter-spacing', 'bvi-letter-spacing', 'big');
+                bvi_panel_voice('Межбуквенный интервал двойной');
                 return false;
             });
 
             $("#bvi-font-family-arial").click(function() {
-                Cookies.set("bvi-font-family", "arial", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Гарнитура: Без засечек", "Russian Female");
-                }
-                BviFontFamily();
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-font-family', 'bvi-font-family', 'arial');
+                bvi_panel_voice('Шрифт без засечек');
                 return false;
             });
 
-            $("#bvi-font-family-times-new-roman").click(function() {
-                Cookies.set("bvi-font-family", "times", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Гарнитура: С засечками", "Russian Female");
-                }
-                BviFontFamily();
+            $("#bvi-font-family-times").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-font-family', 'bvi-font-family', 'times');
+                bvi_panel_voice('Шрифт с засечками');
                 return false;
             });
 
-            $("#bvi-font-family-default").click(function() {
-                Cookies.set("bvi-font-family", "default", {
-                    path: "/"
-                });
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Гарнитура: Без засечек", "Russian Female");
-                }
-                BviFontFamily();
+            $("#bvi-flash-iframe-true").click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-flash-iframe', 'bvi-flash-iframe', true);
+                bvi_panel_voice('Включить фрейм');
                 return false;
             });
 
-            $('#bvi-panel-hide').click(function () {
-                Cookies.set("bvi-panel-hide", "1", {
-                    path: "/"
-                });
-                BviPanelHide();
+            $("#bvi-flash-iframe-false").click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-flash-iframe', 'bvi-flash-iframe', false);
+                bvi_panel_voice('Выключить фрейм');
                 return false;
             });
 
-            $('#bvi-panel-show').click(function () {
-                Cookies.set("bvi-panel-hide", "0", {
-                    path: "/"
-                });
-                BviPanelHide();
+            $("#bvi-voice-true").click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-voice', 'bvi-voice', true);
+                bvi_panel_voice('Синтез речи включён');
+                bvi_voice_check();
+                return false;
+            });
+
+            $("#bvi-voice-false").click(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                set('data-bvi-voice', 'bvi-voice', false);
+                bvi_panel_voice('Синтез речи выключён');
+                bvi_voice_check();
                 return false;
             });
 
             $("#bvi-settings-default").click(function() {
-                Cookies.set("bvi-panel", setting.BviPanel, {
-                    path: "/"
-                });
+                $('#bvi-theme-' + Cookies.get("bvi-theme")).removeClass('active');
+                $('#bvi-images-' + Cookies.get("bvi-images")).removeClass('active');
+                $('#bvi-line-height-' + Cookies.get("bvi-line-height")).removeClass('active');
+                $('#bvi-letter-spacing-' + Cookies.get("bvi-letter-spacing")).removeClass('active');
+                $('#bvi-font-family-' + Cookies.get("bvi-font-family")).removeClass('active');
+                $('#bvi-flash-iframe-' + Cookies.get("bvi-flash-iframe")).removeClass('active');
+                $('#bvi-voice-' + Cookies.get("bvi-voice")).removeClass('active');
 
-                Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
-                    path: "/"
-                });
+                $('#bvi-theme-' + default_setting.bvi_theme).addClass('active');
+                $('#bvi-images-' + default_setting.bvi_images).addClass('active');
+                $('#bvi-line-height-' + default_setting.bvi_line_height).addClass('active');
+                $('#bvi-letter-spacing-' + default_setting.bvi_letter_spacing).addClass('active');
+                $('#bvi-font-family-' + default_setting.bvi_font).addClass('active');
+                $('#bvi-flash-iframe-' + default_setting.bvi_flash_iframe).addClass('active');
+                $('#bvi-voice-' + default_setting.bvi_voice).addClass('active');
 
-                Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
-                    path: "/"
-                });
-                Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-img", setting.BviPanelImg, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-reload", setting.BviPanelReload, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-voice", setting.BviPlay, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-flash", setting.BviFlash, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-console-log)", setting.BviConsoleLog, {
-                    path: "/"
-                });
-
-                Cookies.set("bvi-panel-hide)", setting.BviPanelHide, {
-                    path: "/"
-                });
-
-                if (Cookies.get("bvi-voice") == '1') {
-                    responsiveVoice.speak("Стандартные настройки", "Russian Female");
-                }
-                BviBgColor();
-                BviFontSize();
-                BviLetterSpacing();
-                BviLineHeight();
-                BviFontFamily();
-                BviImg();
-                BviVoice();
-                BviFlash();
-                BviPanelHide();
+                set('data-bvi-size', 'bvi-font-size', default_setting.bvi_font_size);
+                set('data-bvi-theme', 'bvi-theme', default_setting.bvi_theme);
+                set('data-bvi-images', 'bvi-images', default_setting.bvi_images);
+                set('data-bvi-line-height', 'bvi-line-height', default_setting.bvi_line_height);
+                set('data-bvi-letter-spacing', 'bvi-letter-spacing', default_setting.bvi_letter_spacing);
+                set('data-bvi-font-family', 'bvi-font-family', default_setting.bvi_font);
+                set('data-bvi-flash-iframe', 'bvi-flash-iframe', default_setting.bvi_flash_iframe);
+                set('data-bvi-voice', 'bvi-voice', default_setting.bvi_voice);
+                bvi_panel_voice('Настройки по умолчанию');
                 return false;
             });
-
-            BviBgColor();
-            BviFontSize();
-            BviLetterSpacing();
-            BviLineHeight();
-            BviFontFamily();
-            BviImg();
-            BviVoice();
-            BviFlash();
-            BviPanelHide();
-        },
-        Active: function (setting) {
-            var selector = $(this).selector;
-            var setting = $.extend({
-                BviPanel: 1,
-                BviPanelActive: 0,
-                BviPanelBg: "white",
-                BviPanelFontFamily: "default",
-                BviPanelFontSize: "12",
-                BviPanelLetterSpacing: "normal",
-                BviPanelLineHeight: "normal",
-                BviPanelImg: 1,
-                BviPanelImgXY: 1,
-                BviPanelReload: 0,
-                BviPanelText: 'Версия для слабовидящих',
-                BviPanelCloseText: 'Обычная версия сайта',
-                BviCloseClassAndId: '',
-                BviFixPanel: 1,
-                BviPlay: 0,
-                BviFlash: 0,
-                BviConsoleLog: 1,
-                BviPanelHide: 0
-            }, setting);
-
-            Cookies.set("bvi-selector", selector, {
-                path: "/"
-            });
-            Cookies.set("bvi-panel", setting.BviPanel, {
-                path: "/"
-            });
-            Cookies.set("bvi-bgcolor", setting.BviPanelBg, {
-                path: "/"
-            });
-            Cookies.set("bvi-font-size", setting.BviPanelFontSize, {
-                path: "/"
-            });
-            Cookies.set("bvi-letter-spacing", setting.BviPanelLetterSpacing, {
-                path: "/"
-            });
-            Cookies.set("bvi-line-height", setting.BviPanelLineHeight, {
-                path: "/"
-            });
-            Cookies.set("bvi-font-family", setting.BviPanelFontFamily, {
-                path: "/"
-            });
-            Cookies.set("bvi-img", setting.BviPanelImg, {
-                path: "/"
-            });
-            Cookies.set("bvi-reload", setting.BviPanelReload, {
-                path: "/"
-            });
-            Cookies.set("bvi-img-XY", setting.BviPanelImgXY, {
-                path: "/"
-            });
-            Cookies.set("bvi-reload", setting.BviPanelReload, {
-                path: "/"
-            });
-            Cookies.set("bvi-voice", setting.BviPlay, {
-                path: "/"
-            });
-            Cookies.set("bvi-flash", setting.BviFlash, {
-                path: "/"
-            });
-            Cookies.set("bvi-flash", setting.BviConsoleLog, {
-                path: "/"
-            });
-            Cookies.set("bvi-panel-hide", setting.BviPanelHide, {
-                path: "/"
-            });
-            method.Init(setting);
-            $('#bvi-close,.bvi-panel-open').hide();
         }
-    };
 
-    $.fn.bvi = function(setting) {
-        if (method[setting]) {
-            return method[setting].apply(this, Array.prototype.slice.call(arguments, 1))
-        } else {
-            if (typeof setting === "object" || !setting) {
-                return method.init.apply(this, arguments)
+        function set(data, set_cookies, set_cookies_data) {
+            Cookies.set(set_cookies, set_cookies_data, {path: "/", expires: 1});
+            $(".bvi-body").attr(data, Cookies.get(set_cookies));
+            get_image();
+        }
+
+        function set_active_link() {
+            $('#bvi-theme-' + Cookies.get("bvi-theme")).addClass('active');
+            $('#bvi-images-' + Cookies.get("bvi-images")).addClass('active');
+            $('#bvi-line-height-' + Cookies.get("bvi-line-height")).addClass('active');
+            $('#bvi-letter-spacing-' + Cookies.get("bvi-letter-spacing")).addClass('active');
+            $('#bvi-font-family-' + Cookies.get("bvi-font-family")).addClass('active');
+            $('#bvi-flash-iframe-' + Cookies.get("bvi-flash-iframe")).addClass('active');
+            $('#bvi-voice-' + Cookies.get("bvi-voice")).addClass('active');
+        }
+
+        function get() {
+            if (typeof Cookies.get("bvi-font-size") === 'undefined'
+                || typeof Cookies.get("bvi-theme") === 'undefined'
+                || typeof Cookies.get("bvi-images") === 'undefined'
+                || typeof Cookies.get("bvi-line-height") === 'undefined'
+                || typeof Cookies.get("bvi-letter-spacing") === 'undefined'
+                || typeof Cookies.get("bvi-voice") === 'undefined'
+                || typeof Cookies.get("bvi-font-family") === 'undefined'
+                || typeof Cookies.get("bvi-panel-hide") === 'undefined'
+                || typeof Cookies.get("bvi-flash-iframe") === 'undefined'
+                || typeof Cookies.get("bvi-reload") === 'undefined'
+            ){
+                Cookies.set("bvi-font-size", default_setting.bvi_font_size, {path: "/", expires: 1});
+                Cookies.set("bvi-theme", default_setting.bvi_theme, {path: "/", expires: 1});
+                Cookies.set("bvi-images", default_setting.bvi_images, {path: "/", expires: 1});
+                Cookies.set("bvi-line-height", default_setting.bvi_line_height, {path: "/", expires: 1});
+                Cookies.set("bvi-letter-spacing", default_setting.bvi_letter_spacing, {path: "/", expires: 1});
+                Cookies.set("bvi-voice", default_setting.bvi_voice, {path: "/", expires: 1});
+                Cookies.set("bvi-font-family", default_setting.bvi_font, {path: "/", expires: 1});
+                Cookies.set("bvi-panel-hide", default_setting.bvi_hide, {path: "/", expires: 1});
+                Cookies.set("bvi-flash-iframe", default_setting.bvi_flash_iframe, {path: "/", expires: 1});
+                Cookies.set("bvi-reload", default_setting.bvi_reload, {path: "/", expires: 1});
+            }
+
+            $('.bvi-body').attr({
+                'data-bvi-panel-hide' : Cookies.get("bvi-panel-hide"),
+                'data-bvi-size' : Cookies.get("bvi-font-size"),
+                'data-bvi-theme' : Cookies.get("bvi-theme"),
+                'data-bvi-images' : Cookies.get("bvi-images"),
+                'data-bvi-line-height' : Cookies.get("bvi-line-height"),
+                'data-bvi-letter-spacing' : Cookies.get("bvi-letter-spacing"),
+                'data-bvi-font-family' : Cookies.get("bvi-font-family"),
+                'data-bvi-flash-iframe' : Cookies.get("bvi-flash-iframe"),
+                'data-bvi-reload' : Cookies.get("bvi-reload"),
+                'data-bvi-voice' : Cookies.get("bvi-voice")
+            });
+
+            var bvi_panel = Cookies.get("bvi-panel-hide");
+            
+            if(bvi_panel === 'false' || typeof bvi_panel === 'undefined') {
+                $('.bvi-panel').show();
+                $('.bvi-eye-link').hide();
             } else {
-                b.error("Метод с именем " + c + " не существует для jQuery.bvi")
+                $('.bvi-panel').hide();
+                $('.bvi-eye-link').show("slow");
             }
         }
-    }
+
+        function get_image() {
+            var bvi_images;
+            bvi_images = Cookies.get("bvi-images");
+
+            if (bvi_images === 'true') {
+                $("img").each(function() {
+                    $(this).removeClass('grayscale');
+                    $(this).show();
+                    $('.bvi-img-off').remove();
+                    if(versionIE == 11 || versionIE == 10 || versionIE == 9) {
+                        var databviimgorign = $(this).attr('data-bvi-img-orign') || this.src;
+                        this.src = databviimgorign;
+                    }
+                });
+            }
+
+            if (bvi_images === 'false') {
+                $(".bvi-img-off").remove();
+                $("img").each(function() {
+                    $(this).removeClass('grayscale');
+                    $(this).hide();
+                    var alt = this.alt || 'Нет описания к изображению';
+                    var imgClass = $(this).attr("class") || '';
+                    var imgId = $(this).attr("id") || '';
+                    $(this).after($('<div class="bvi-img-off '+imgClass+'" id="'+imgId+'" style="width: ' + $(this).width() + "px; height: " + $(this).height() + 'px">').html(alt));
+                });
+            }
+
+            if (bvi_images === 'grayscale') {
+                $("img").each(function() {
+                    $(this).show();
+                    $(this).addClass('grayscale');
+                    $('.bvi-img-off').remove();
+                    if(versionIE == 11 || versionIE == 10 || versionIE == 9) {
+                        $(this).attr('data-bvi-img-orign', this.src);
+                        var src = grayscale(this.src);
+                        this.src = src;
+                    }
+                });
+            }
+        }
+
+        function grayscale(src){
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var imgObj = new Image();
+            //imgObj.crossOrigin = 'anonymous';
+            imgObj.src = src;
+            canvas.width = imgObj.width;
+            canvas.height = imgObj.height;
+            ctx.drawImage(imgObj, 0, 0);
+            var imgPixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for(var y = 0; y < imgPixels.height; y++){
+                for(var x = 0; x < imgPixels.width; x++){
+                    var i = (y * 4) * imgPixels.width + x * 4;
+                    var avg = (imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3;
+                    imgPixels.data[i] = avg;
+                    imgPixels.data[i + 1] = avg;
+                    imgPixels.data[i + 2] = avg;
+                }
+            }
+            ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
+
+            return canvas.toDataURL();
+        }
+
+        function active() {
+            if(versionIE == 8 || versionIE == 7 || versionIE == 6 || versionIE == 5) {
+                console.log('Браузер не поддерживается.');
+            } else {
+                if (Cookies.get('bvi-panel-active') === 'true') {
+                    $(selector).hide().after($('<a href="#" class="bvi-panel-close" title="Обычная версия сайта">Обычная версия сайта</a>'));
+                    panel();
+                    bvi_voice();
+                    bvi_voice_check();
+                    bvi_click();
+                    set_active_link();
+                } else {
+                    bvi_voice();
+                    $(selector).show();
+                    $('.bvi-panel-close').remove();
+                    $(".bvi").remove();
+                    $('body > .bvi-body').contents().unwrap();
+                    $('.bvi-voice-text').contents().unwrap();
+                }
+            }
+        }
+
+        function panel() {
+            $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">');
+            $('body').wrapInner('<div class="bvi-body"></div>');
+            $('body').prepend('<div class="bvi bvi-panel">\n' +
+                '    <div class="bvi-container bvi-my-auto">\n' +
+                '        <div class="bvi-row">\n' +
+                '            <div class="bvi-col-sm-3 bvi-col-md-6 bvi-col-lg-2 bvi-p-0">\n' +
+                '                <div class="bvi-text-center">\n' +
+                '                    <div class="bvi-title bvi-mb-2">Размер шрифта</div>\n' +
+                '                    <div class="bvi-btn-group">\n' +
+                '                        <a href="#" id="bvi-font-size-less" class="bvi-btn bvi-btn-outline-dark bg" title="Уменьшить размер шрифта"><i class="fas fa-font"></i><i class="fas fa-minus"></i></a>\n' +
+                '                        <a href="#" id="bvi-font-size-more" class="bvi-btn bvi-btn-outline-dark" title="Увеличить размер шрифта"><i class="fas fa-font"></i><i class="fas fa-plus"></i></a>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="bvi-col-sm-5 bvi-col-md-6 bvi-col-lg-3 bvi-p-0">\n' +
+                '                <div class="bvi-text-center">\n' +
+                '                    <div class="bvi-title bvi-mb-2">Цвета сайта</div>\n' +
+                '                    <div class="bvi-btn-group">\n' +
+                '                        <a href="#" id="bvi-theme-white" class="bvi-btn bvi-btn-link bvi-border bvi-border-dark" title="Черным по белому" style="color: black; background-color: white !important;"><i class="fas fa-font"></i></a>\n' +
+                '                        <a href="#" id="bvi-theme-black" class="bvi-btn bvi-btn-link" title="Белым по черному" style="color: white !important; background-color: black !important;"><i class="fas fa-font"></i></a>\n' +
+                '                        <a href="#" id="bvi-theme-blue" class="bvi-btn bvi-btn-link bvi-border bvi-border-dark" title="Темно-синим по голубому" style="color: #063462 !important; background-color: #9DD1FF !important;"><i class="fas fa-font"></i></a>\n' +
+                '                        <a href="#" id="bvi-theme-brown" class="bvi-btn bvi-btn-dark bvi-border bvi-border-dark" title="Коричневым по бежевому" style="color: #4D4B43 !important; background-color: #F7F3D6 !important;"><i class="fas fa-font"></i></a>\n' +
+                '                        <a href="#" id="bvi-theme-green" class="bvi-btn bvi-btn-dark bvi-border bvi-border-dark" title="Зеленым по темно-коричневому" style="color: #A9E44D !important; background-color: #3B2716 !important;"><i class="fas fa-font"></i></a>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="bvi-col-sm-4 bvi-col-md-6 bvi-col-lg-2 bvi-p-0">\n' +
+                '                <div class="bvi-text-center">\n' +
+                '                    <div class="bvi-title bvi-mb-2">Изображения</div>\n' +
+                '                    <div class="bvi-btn-group">\n' +
+                '                        <a href="#" id="bvi-images-true" class="bvi-btn bvi-btn-outline-dark" title="Изображения включены"><i class="fas fa-circle fa-1x"></i></a>\n' +
+                '                        <a href="#" id="bvi-images-false" class="bvi-btn bvi-btn-outline-dark" title="Изображения выключены"><i class="far fa-circle fa-1x"></i></a>\n' +
+                '                        <a href="#" id="bvi-images-grayscale" class="bvi-btn bvi-btn-outline-dark" title="Изображения черно-белые"><i class="fas fa-adjust fa-1x"></i></a>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="bvi-col-sm-12 bvi-col-md-6 bvi-col-lg-5 bvi-p-0">\n' +
+                '                <div class="bvi-text-center">\n' +
+                '                    <div class="bvi-title bvi-mb-2">Дополнительно</div>\n' +
+                '                    <div class="bvi-btn-group bvi-btn-voice">\n' +
+                '                        <a href="#" id="bvi-voice-true" class="bvi-btn bvi-btn-outline-dark" title=""><i class="fas fa-volume-up"></i></a>\n' +
+                '                        <a href="#" id="bvi-voice-false" class="bvi-btn bvi-btn-outline-dark"><i class="fas fa-volume-off"></i></a>\n' +
+                '                    </div>\n' +
+                '                    <div class="bvi-btn-group">\n' +
+                '                        <a href="#" id="bvi-setting" class="bvi-btn bvi-btn-outline-dark" title="Настройки"><i class="fas fa-cogs mr-1"></i> Настройки</a>\n' +
+                '                        <a href="#" id="bvi-panel-close" class="bvi-btn bvi-btn-outline-dark" title="Обычная версия сайта"><i class="fas fa-low-vision"></i></a>\n' +
+                '                        <a href="#" id="bvi-panel-hide" class="bvi-btn bvi-btn-outline-dark" title="Скрыть панель"><i class="fas fa-chevron-circle-up"></i></a>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '        <div class="bvi-row bvi-setting-menu">\n' +
+                '            <div class="bvi-col">\n' +
+                '                <hr class="bvi-hr">\n' +
+                '                <div class="bvi-row">\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-center">\n' +
+                '                            <div class="bvi-title bvi-mb-2">Междустрочный интервал</div>\n' +
+                '                            <div class="bvi-btn-group">\n' +
+                '                                <a href="#" id="bvi-line-height-normal" class="bvi-btn bvi-btn-outline-dark" title="Междустрочный интервал стандартный">Стандартный</a>\n' +
+                '                                <a href="#" id="bvi-line-height-average" class="bvi-btn bvi-btn-outline-dark" title="Междустрочный интервал средний">Средний</a>\n' +
+                '                                <a href="#" id="bvi-line-height-big" class="bvi-btn bvi-btn-outline-dark" title="Междустрочный интервал большой">Большой</a>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-center">\n' +
+                '                            <div class="bvi-title bvi-mb-2">Межбуквенный интервал</div>\n' +
+                '                            <div class="bvi-btn-group">\n' +
+                '                                <a href="#" id="bvi-letter-spacing-normal" class="bvi-btn bvi-btn-outline-dark" title="Межбуквенный интервал одинарный">Одинарный</a>\n' +
+                '                                <a href="#" id="bvi-letter-spacing-average" class="bvi-btn bvi-btn-outline-dark" title="Межбуквенный интервал полуторный">Полуторный</a>\n' +
+                '                                <a href="#" id="bvi-letter-spacing-big" class="bvi-btn bvi-btn-outline-dark" title="Межбуквенный интервал двойной">Двойной</a>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-center">\n' +
+                '                            <div class="bvi-title bvi-mb-2">Шрифт</div>\n' +
+                '                            <div class="bvi-btn-group">\n' +
+                '                                <a href="#" id="bvi-font-family-arial" class="bvi-btn bvi-btn-outline-dark" title="Шрифт без засечек">Без засечек</a>\n' +
+                '                                <a href="#" id="bvi-font-family-times" class="bvi-btn bvi-btn-outline-dark" title="Шрифт с засечками">С засечками</a>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '                <div class="bvi-row">\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-left bvi-mt-3">\n' +
+                '                            <div class="bvi-btn-group">\n' +
+                '                                <a href="#" id="bvi-flash-iframe-true" class="bvi-btn bvi-btn-outline-dark bvi-btn-sm" title="Включить Фрейм"><i class="fas fa-bolt"></i> Включить Фрейм</a>\n' +
+                '                                <a href="#" id="bvi-flash-iframe-false" class="bvi-btn bvi-btn-outline-dark bvi-btn-sm" title="Включить Фрейм"><i class="fas fa-bolt"></i> Выключить Фрейм</a>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-right bvi-mt-3">\n' +
+                '                            <a href="#" id="bvi-settings-default" class="bvi-btn bvi-btn-outline-dark bvi-btn-sm" title="Вернуть стандартные настройки"><i class="fas fa-sync-alt"></i> Настройки по умолчанию</a>\n' +
+                '                            <a href="#" id="bvi-setting-close" class="bvi-btn bvi-btn-dark bvi-btn-sm" title="Закрыть панель">Закрыть <i class="fas fa-times-circle"></i> </a>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '                <div class="bvi-row">\n' +
+                '                    <div class="bvi-col bvi-p-0">\n' +
+                '                        <div class="bvi-text-center bvi-copy bvi-mt-2">\n' +
+                '                            <a href="http://bvi.isvek.ru/" target="_blank" title="bvi.isvek.ru v1.0.7">bvi.isvek.ru</a>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '<div class="bvi">\n' +
+                '    <a href="#" id="bvi-panel-show" class="bvi-btn bvi-btn-danger shadow-sm bvi-eye-link" style="display: none"><i class="fas fa-eye fa-2x"></i></a>\n' +
+                '</div>');
+
+            var scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+
+            if (scroll > 99) {
+                $(".bvi-panel").addClass("bvi-fixed-top");
+            }
+
+            $(window).scroll(function () {
+                if ($(this).scrollTop() >= 99) {
+                    $(".bvi-panel").addClass('bvi-fixed-top');
+                } else {
+                    $(".bvi-panel").removeClass("bvi-fixed-top");
+                }
+            });
+
+            get();
+            get_image();
+        }
+
+        if (default_setting.bvi_theme == 'white' ||
+            default_setting.bvi_theme == 'black' ||
+            default_setting.bvi_theme == 'blue' ||
+            default_setting.bvi_theme == 'brown' ||
+            default_setting.bvi_theme == 'green') {
+            check_bvi_theme = true;
+        } else {
+            check_bvi_theme = false;
+            checkError = ['bvi_theme'];
+        }
+
+        if (default_setting.bvi_font == 'times' || default_setting.bvi_font == 'arial'){
+            check_bvi_font = true;
+        } else {
+            check_bvi_font = false;
+            checkError = ['bvi_font'];
+        }
+
+        if (default_setting.bvi_letter_spacing == 'normal' || default_setting.bvi_letter_spacing == 'average' || default_setting.bvi_letter_spacing == 'big'){
+            check_bvi_letter_spacing = true;
+        } else {
+            check_bvi_letter_spacing = false;
+            checkError = ['bvi_letter_spacing'];
+        }
+
+        if (default_setting.bvi_line_height == 'normal' || default_setting.bvi_line_height == 'average' || default_setting.bvi_line_height == 'big'){
+            check_bvi_line_height = true;
+        } else {
+            check_bvi_line_height = false;
+            checkError = ['bvi_line_height'];
+        }
+
+        if (default_setting.bvi_font_size == 0) {
+            check_bvi_font_size = false;
+            checkError = ['bvi_font_size'];
+        } else if(default_setting.bvi_font_size <= 40){
+            check_bvi_font_size = true;
+        } else {
+            check_bvi_font_size = false;
+            checkError = ['bvi_font_size'];
+        }
+
+        if(default_setting.bvi_images === false || default_setting.bvi_images === true || default_setting.bvi_images === 'grayscale') {
+            check_bvi_images = true;
+        } else {
+            check_bvi_images = false;
+            checkError = ['bvi_images'];
+        }
+
+        if(default_setting.bvi_fixed === false || default_setting.bvi_fixed === true ) {
+            check_bvi_fixed = true;
+        } else {
+            check_bvi_fixed = false;
+            checkError = ['bvi_fixed'];
+        }
+
+        if(default_setting.bvi_voice === false || default_setting.bvi_voice === true ) {
+            check_bvi_voice = true;
+        } else {
+            check_bvi_voice = false;
+            checkError = ['bvi_voice'];
+        }
+
+        if(default_setting.bvi_flash_iframe === false || default_setting.bvi_flash_iframe === true ) {
+            check_bvi_flash_iframe = true;
+        } else {
+            check_bvi_flash_iframe = false;
+            checkError = ['bvi_flash_iframe'];
+        }
+
+        if(default_setting.bvi_hide === false || default_setting.bvi_hide === true ) {
+            check_bvi_hide = true;
+        } else {
+            check_bvi_hide = false;
+            checkError = ['bvi_hide'];
+        }
+
+        if(check_bvi_theme === true &&
+            check_bvi_font === true &&
+            check_bvi_letter_spacing === true &&
+            check_bvi_line_height === true &&
+            check_bvi_font_size === true &&
+            check_bvi_images === true &&
+            check_bvi_fixed === true &&
+            check_bvi_flash_iframe === true &&
+            check_bvi_voice === true &&
+            check_bvi_hide === true){
+            if ($(selector).length) {
+                $(selector).click(function () {
+                    Cookies.set('bvi-panel-active', true, {path: "/", expires: 1});
+                    active();
+                    bvi_panel_voice('Версия сайта для слабовидящих');
+                    return false;
+                });
+            } else {
+                console.log('Неправильный параметр: bvi_target');
+            }
+            active();
+        } else {
+            console.log('ERROR BVI v1.0.7 - Неправильный параметр: ' + checkError);
+        }
+    };
 })(jQuery);
