@@ -88,4 +88,6 @@ jQuery(document).ready(function($){
         });
         return false;
     });
+    $('.bvi-color-picker-bvi-link-bg').wpColorPicker({defaultColor:'#e53935'});
+    $('.bvi-color-picker-bvi-link-color').wpColorPicker({defaultColor:'#ffffff'});
 });

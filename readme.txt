@@ -4,7 +4,7 @@ Donate link: http://bvi.isvek.ru/donate/
 Tags: Size, button, visually, impaired, ssistive, color, font, reading, vision.
 Requires at least: 4.3.1
 Tested up to: 5.1.1
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-= Плагин bvi v1.0.7 включает в себя: =
+= Плагин bvi v1.0.8 включает в себя: =
 
 * Включение/Отключение изображений (оттенка серого);
 * Включение/Отключение изображений (в место изображения появится alt надпись);
@@ -32,15 +32,15 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 == Installation ==
 
 * Закачайте плагин в директорию `/wp-content/plugins/`.
-* Плагин активировать через ` меню WordPress ` > Плагины > bvi v1.0.7 > Активировать`.
-* Перейдите bvi v1.0.7 и в настройках `включите плагин`.
+* Плагин активировать через ` меню WordPress ` > Плагины > bvi v1.0.8 > Активировать`.
+* Перейдите bvi v1.0.8 и в настройках `включите плагин`.
 * Добавьте кнопку для слабовидящих в виджете или воспользуйтесь шорткодом `[bvi text="Версия для слабовидящих"] или [bvi]`.
 
 ----------
 
 * Upload the plug-in directory `/ wp-content / plugins /`.
-* WordPress plugin is activated ` Menu > Plugins > bvi v1.0.7 > Activate`.
-* Go bvi v1.0.7 and is configured to `include a plugin`.
+* WordPress plugin is activated ` Menu > Plugins > bvi v1.0.8 > Activate`.
+* Go bvi v1.0.8 and is configured to `include a plugin`.
 * Add a button to the visually impaired in the widget shortcode, or use the `[bvi text = "version for the visually impaired"] or [bvi]`.
 
 == Screenshots ==
@@ -52,6 +52,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 3. Страница настроек Button visually impaired `screenshot-3.jpg`.
 
 == Changelog ==
+
+= 1.0.8 =
+* Исправлены ошибки;
 
 = 1.0.7 =
 * Исправлены ошибки;

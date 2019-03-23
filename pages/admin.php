@@ -219,6 +219,55 @@
             </div>
         </div>
         <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_fixed" class="font-weight-bold">Фиксация панели в верхней части страницы</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_fixed'], true); ?>">
+                        <input type="radio" name="bvi_fixed" value="true" id="bvi_fixed" autocomplete="off" <?php checked(true, $this->get_option['bvi_fixed']); ?>> Включить
+                    </label>
+                    <label class="btn btn-outline-secondary btn-sm <?php $this->check_active($this->get_option['bvi_fixed'], false); ?>">
+                        <input type="radio" name="bvi_fixed" value="false" id="bvi_fixed" autocomplete="off" <?php checked(false, $this->get_option['bvi_fixed']); ?>> Выключить
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_link_text" class="font-weight-bold">Текст ссылки</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <input type="text" name="bvi_link_text" value="<?php echo $this->get_option['bvi_link_text'];?>" id="bvi_link_textg" class="form-control">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_fixed" class="font-weight-bold">Цвет текста и иконки</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <input type="text" name="bvi_link_color" value="<?php echo $this->get_option['bvi_link_color'];?>" id="bvi_link_color" class="bvi-color-picker-bvi-link-color">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="bvi_link_bg" class="font-weight-bold">Фон ссылки</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <input type="text" name="bvi_link_bg" value="<?php echo $this->get_option['bvi_link_bg'];?>" id="bvi_link_bg" class="bvi-color-picker-bvi-link-bg">
+                </div>
+            </div>
+        </div>
+        <hr>
         <p class="submit">
             <?php wp_nonce_field('settings_save','settings_save'); ?>
             <input type="hidden" name="action" value="settings_save">

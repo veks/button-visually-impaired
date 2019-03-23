@@ -4,7 +4,7 @@
  * Plugin Name: Button visually impaired
  * Plugin URI: http://www.bvi.isvek.ru/
  * Description: Версия плагина для слабовидящих.
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: Vek
  * Author URI: http://www.bvi.isvek.ru/vek
  * License: GPL-2.0+
@@ -21,10 +21,10 @@ class bvi_isvek
 	/**
 	 * @var string
 	 */
-    public $ver = '1.0.7';
+    public $ver = '1.0.8';
 
 	/**
-	 * @var
+	 * @var string
 	 */
     public $get_option;
 
@@ -42,7 +42,6 @@ class bvi_isvek
 
         if ((bool) $this->get_option['bvi_active'] == true)
         {
-	        show_admin_bar(false);
             add_action('wp_enqueue_scripts', array(&$this, 'scripts'), 9999, 0);
             add_shortcode('bvi', array(&$this, 'shortcode'), 10, 0);
         }
@@ -66,10 +65,10 @@ class bvi_isvek
         }
         else
         {
-            $bvi_text = null;
+            $bvi_text = 'Версия для слабовидящих';
         }
 
-        return '<div class="bvi-button"><a href="#" class="bvi-open">'.$bvi_text.'</a></div>';
+        return '<div class="bvi-button"><a href="#" class="bvi-link bvi-open"><i class="bvi-icon bvi-eye bvi-2x"></i> '.$bvi_text.'</a></div>';
     }
 
 	/**
@@ -90,13 +89,15 @@ class bvi_isvek
 	 */
     public function admin_scripts()
     {
+	    wp_enqueue_style('wp-color-picker');
+
         wp_register_script('bvi-bootstrap-notify', BVI_PLUGIN_URL_JS . 'bootstrap-notify.min.js', array('jquery'), '3.0.0', true);
         wp_enqueue_script('bvi-bootstrap-notify');
 
         wp_register_script('bvi-bootstrap', BVI_PLUGIN_URL_JS . 'bootstrap.min.js', array('jquery'), '4.3.1', true);
         wp_enqueue_script('bvi-bootstrap');
 
-        wp_register_script('bvi-admin-js', BVI_PLUGIN_URL_JS.'bvi-admin.min.js', array('jquery'), $this->ver, true);
+        wp_register_script('bvi-admin-js', BVI_PLUGIN_URL_JS.'bvi-admin.min.js', array('jquery', 'wp-color-picker'), $this->ver, true);
         wp_localize_script('bvi-admin-js', 'bvi', array('ajaxurl'=> admin_url('admin-ajax.php')));
         wp_enqueue_script('bvi-admin-js');
 
@@ -114,11 +115,17 @@ class bvi_isvek
 	 */
     public function scripts()
     {
-        /*
-         * CSS
-         */
+        // CSS
+	    wp_register_style('bvi-font', BVI_PLUGIN_URL_CSS . 'bvi-font.min.css', '1.0.7', $this->ver);
+	    wp_enqueue_style('bvi-font');
+
         wp_register_style('bvi', BVI_PLUGIN_URL_CSS . 'bvi.min.css', '1.0.7', $this->ver);
         wp_enqueue_style('bvi');
+
+	    $bvi_link_color = $this->get_option['bvi_link_color'];
+	    $bvi_link_bg = $this->get_option['bvi_link_bg'];
+	    $custom_css = "a.bvi-link {background-color: $bvi_link_bg !important; color: {$bvi_link_color} !important;}";
+	    wp_add_inline_style('bvi', $custom_css);
 
         wp_register_style('bvi-ie-9', BVI_PLUGIN_URL_CSS . 'bootstrap-ie9.min.css', '4.2.1', $this->ver);
         wp_style_add_data('bvi-ie-9', 'conditional', 'if lt IE 9');
@@ -128,11 +135,7 @@ class bvi_isvek
         wp_style_add_data('bvi-ie-8', 'conditional', 'if lt IE 8');
         wp_enqueue_style('bvi-ie-8');
 
-        wp_register_style('bvi-fontawesome', BVI_PLUGIN_URL_CSS . 'all.min.css', '5.1.1', $this->ver);
-        wp_enqueue_style('bvi-fontawesome');
-        /*
-         * JS
-         */
+        // JS
         wp_enqueue_script('jquery');
 
         wp_register_script('bvi-responsivevoice-js', BVI_PLUGIN_URL_JS . 'responsivevoice.min.js', array('jquery'), '1.5.12', $this->no_work());
@@ -176,9 +179,9 @@ class bvi_isvek
                 'dashicons-visibility'
             );
 
-            add_action("admin_print_scripts-{$admin_menu}",array($this,'admin_scripts'));
-            add_action("admin_print_scripts-{$admin_menu}",array($this,'admin_scripts'));
-            add_action('load-'.$admin_menu, array($this,'plugin_menu_help_tab'));
+            add_action("admin_print_scripts-{$admin_menu}", array($this, 'admin_scripts'));
+            add_action("admin_print_scripts-{$admin_menu}", array($this, 'admin_scripts'));
+            add_action('load-'.$admin_menu, array($this, 'plugin_menu_help_tab'));
         }
     }
 
@@ -281,7 +284,10 @@ class bvi_isvek
                         'bvi_voice'          => esc_attr($_POST['bvi_voice']),
                         'bvi_flash_iframe'   => esc_attr($_POST['bvi_flash_iframe']),
                         'bvi_hide'           => esc_attr($_POST['bvi_hide']),
-                        'bvi_fixed'          => esc_attr($_POST['bvi_fixed'])
+                        'bvi_fixed'          => esc_attr($_POST['bvi_fixed']),
+                        'bvi_link_color'     => esc_attr($_POST['bvi_link_color']),
+                        'bvi_link_bg'        => esc_attr($_POST['bvi_link_bg']),
+                        'bvi_link_text'      => esc_attr($_POST['bvi_link_text']),
                     );
 
                     $result = $this->wp_error_form($param);
@@ -315,7 +321,10 @@ class bvi_isvek
                                 'bvi_voice'          => filter_var(esc_attr($_POST['bvi_voice']), FILTER_VALIDATE_BOOLEAN),
                                 'bvi_flash_iframe'   => filter_var(esc_attr($_POST['bvi_flash_iframe']), FILTER_VALIDATE_BOOLEAN),
                                 'bvi_hide'           => filter_var(esc_attr($_POST['bvi_hide']), FILTER_VALIDATE_BOOLEAN),
-                                'bvi_fixed'          => filter_var(esc_attr($_POST['bvi_fixed']), FILTER_VALIDATE_BOOLEAN)
+                                'bvi_fixed'          => filter_var(esc_attr($_POST['bvi_fixed']), FILTER_VALIDATE_BOOLEAN),
+                                'bvi_link_color'     => (string) esc_attr($_POST['bvi_link_color']),
+                                'bvi_link_bg'        => (string) esc_attr($_POST['bvi_link_bg']),
+                                'bvi_link_text'      => (string) esc_attr($_POST['bvi_link_text']),
                             );
 
                             update_option('bvi_database', $params, true);
@@ -456,7 +465,10 @@ class bvi_isvek
             'bvi_voice'          => true,
             'bvi_flash_iframe'   => true,
             'bvi_hide'           => false,
-            'bvi_fixed'          => true
+            'bvi_fixed'          => true,
+            'bvi_link_color'     => '#ffffff',
+            'bvi_link_bg'        => '#e53935',
+            'bvi_link_text'      => 'Версия для слабовидящих',
         );
         return $SettingsDefaultDataBase;
     }
@@ -506,7 +518,8 @@ class Bvi_Widget extends WP_Widget
 
     public function template_button()
     {
-        return '<div><a href="#" class="bvi-open">Версия сайта для слабовидящих</a></div>';
+        $bvi_link_text = $this->get_option['bvi_link_text'];
+        return '<a href="#" class="bvi-link bvi-open"><i class="bvi-icon bvi-eye bvi-2x"></i> ' . $bvi_link_text . '</a>';
     }
 }
 $BviPanel = get_option('bvi_database');
