@@ -65,6 +65,9 @@ class bvi_plugin {
 		register_activation_hook( __FILE__, array( $this, 'activation_plugin' ) );
 	}
 
+	/**
+	 *
+	 */
 	public function languages() {
 		load_plugin_textdomain( 'bvi-languages', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
@@ -590,9 +593,10 @@ class bvi_plugin {
 				break;
 			case 'select' :
 				$bvi_font_size = ( $args['name'] == 'bvi_font_size' ) ? 'пикселов.' : '';
+
 				echo "<select name='{$this->get_option_name}[{$args['name']}]' id='{$args['id']}'>";
 				foreach ( $args['value'] as $key => $value ) {
-					$selected = ( $this->get_option[ $args['name'] ] == $key ) ? "selected='selected'" : '';
+					$selected = selected( $key, $this->get_option[ $args['name'] ], false );
 					echo "<option value='{$key}'{$selected}>{$value}</option>";
 				}
 				echo "</select>" . " " . $bvi_font_size;
@@ -662,10 +666,10 @@ class bvi_plugin {
 			add_settings_error( 'bvi-line-height', 'invalid-bvi-line-height', 'Неправильное значение для поля (Междустрочный интервал).' );
 		}
 
-		if ( $input['bvi_images'] == 1 || $input['bvi_images'] == 0 || (string) $input['bvi_images'] == 'grayscale' ) {
+		if ( $input['bvi_images'] == 1 || $input['bvi_images'] == 0 || $input['bvi_images'] == 'grayscale' ) {
 			$output['bvi_images'] = $input['bvi_images'];
 		} else {
-			add_settings_error( 'bvi-images', 'invalid-bvi-images', 'Неправильное значение для поля (Адаптация изображений).' );
+			add_settings_error( 'bvi-images', 'invalid-bvi-images', 'Неправильное значение для поля (Адаптация изображений).' . $input['bvi_images'] );
 		}
 
 		if ( $input['bvi_reload'] == 1 || $input['bvi_reload'] == 0 ) {
